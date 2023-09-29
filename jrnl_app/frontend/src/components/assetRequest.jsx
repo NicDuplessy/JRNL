@@ -31,13 +31,19 @@ function AssetRequest() {
 
   return (
     <div>
-      <input
-        type="text"
+      <select
         name="typeDevice"
-        placeholder="Device type needed"
         value={typeDevice}
         onChange={handleInputChange}
-      />
+        placeholder="Model Needed"
+      >
+        <option value="">Select Model Needed</option>
+        <option value="Spectre">Spectre</option>
+        <option value="ThinkPad">ThinkPad</option>
+        <option value="Zenbook">Zenbook</option>
+        <option value="XPS">XPS</option>
+        <option value="MacBook">MacBook</option>
+      </select>
       <input
         type="text"
         name="requester"
