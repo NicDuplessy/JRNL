@@ -53,27 +53,46 @@ function AssetEntry() {
         value={serialNum}
         onChange={handleInputChange}
       />
-      <input
-        type="text"
+      <select
         name="status"
-        placeholder="Status"
         value={status}
         onChange={handleInputChange}
-      />
-      <input
-        type="text"
+        placeholder="Status"
+      >
+        <option value="">Select Status</option>
+        <option value="In Use">In Use</option>
+        <option value="Available">Available</option>
+        <option value="On Order">On Order</option>
+        <option value="Maintenance">Maintenance</option>
+        <option value="Unknown">Unknown</option>
+        <option value="Retired">Retired</option>
+      </select>
+      <select
         name="model"
-        placeholder="Model"
         value={model}
         onChange={handleInputChange}
-      />
-      <input
-        type="text"
+        placeholder="Model"
+      >
+        <option value="">Select Model</option>
+        <option value="Spectre">Spectre</option>
+        <option value="ThinkPad">ThinkPad</option>
+        <option value="Zenbook">Zenbook</option>
+        <option value="XPS">XPS</option>
+        <option value="MacBook">MacBook</option>
+      </select>
+      <select
         name="condition"
-        placeholder="Condition"
         value={condition}
         onChange={handleInputChange}
-      />
+        placeholder="Condition"
+      >
+        <option value="">Select Condition</option>
+        <option value="New">New</option>
+        <option value="Good">Good</option>
+        <option value="Fair">Fair</option>
+        <option value="Unknown">Unknown</option>
+        <option value="Scrap">Scrap</option>
+      </select>
       <input
         type="text"
         name="assignedTo"
