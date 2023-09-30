@@ -57,3 +57,28 @@ function assetRequestPrompt() {
 
 /*May move newEntryPrompt function and assetRequestPrompt function to the AssetEntry and AssetRequest classes to allow for faster 
 compiling and constructing of objects and create separate functions outside where the new objects are created. */
+
+function App() {
+  return (
+    <div>
+      <header class="App-header">
+        <h1>JRNL</h1>
+        <h2>Asset Management </h2>
+      </header>
+      <body class="App">
+        <section>
+          <h3>Asset Entry</h3>
+          <AssetEntry />
+        </section>
+        <section>
+          <h3>Asset Request</h3>
+          <AssetRequest />
+        </section>
+        <section>
+          <h3>Asset Retirement</h3>
+          <AssetRetirement />
+        </section>
+      </body>
+    </div>
+  );
+}
