@@ -3,10 +3,6 @@
   background-color: #656673;
 }
 
-.Menu {
-  text-align: flex;
-}
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -36,19 +32,21 @@
   background-color: #1c2037;
   color: #f75926;
 }
-/*
-.Navbar {
+.Menu ul {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding-left: auto;
+  padding-right: auto;
+  text-align: justify;
+  flex-direction: row;
+  list-style-type: none;
+}
+
+.Home-message {
   justify-content: center;
   display: center;
   align-items: center;
-  background-color: #1c2037;
+  background-color: white;
 }
-
-div {
-  background-color: #1c2037;
-}
-
-.Retirement {
-  color: #f75926;
-}
-*/

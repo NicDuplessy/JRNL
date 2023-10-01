@@ -44,9 +44,9 @@ function App() {
 
 function Home() {
   return (
-    <div>
-      <h1 class="Home-page">Welcome to JRNL Asset Management</h1>
-      <p class="Home-page">
+    <div class="Home-message">
+      <h1>Welcome to JRNL Asset Management</h1>
+      <p>
         This is the home page of our asset management application. You can use
         the navigation menu to access different features.
       </p>
