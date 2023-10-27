@@ -31,17 +31,31 @@ function AssetEntry() {
   };
 
   const handleSubmit = () => {
-    // You can handle the form submission here
-    // For example, you can log the form values to the console
-    console.log({
-      serialNum,
-      status,
-      model,
-      condition,
-      assignedTo,
-    });
+    const formData = {
+      name: serialNum, // Assuming serialNum is being used as the asset name
+      description: model, // Assuming model is being used as the description
+      location: assignedTo,
+      status: status,
+    };
 
-    // You can also send the form data to an API or perform other actions here
+    fetch("http://localhost:5000/assets", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          console.log(data.message); // Log success message from server
+        } else {
+          console.error("Error:", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   return (
