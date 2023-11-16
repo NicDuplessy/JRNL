@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 # Database configuration using PyMySQL
 app.config[
@@ -12,18 +13,49 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-# Asset model definition
+class Model(db.Model):
+    __tablename__ = 'model'
+    ModelID = db.Column(db.Integer, primary_key=True)
+    ModelName = db.Column(db.String(30))
+    assets = db.relationship('Asset', backref='model', lazy=True)
+
+class Condition(db.Model):
+    __tablename__ = 'condition'
+    condition_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    assets = db.relationship('Asset', backref='condition', lazy=True)
+
+class Stockroom(db.Model):
+    __tablename__ = 'stockroom'
+    stockroom_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    assets = db.relationship('Asset', backref='stockroom', lazy=True)
+
+class Status(db.Model):
+    __tablename__ = 'status'
+    status_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    assets = db.relationship('Asset', backref='status', lazy=True)
+
 class Asset(db.Model):
-    __tablename__ = "asset"
+    __tablename__ = 'asset'
+    SerialNumber = db.Column(db.Integer, primary_key=True)
+    Specs = db.Column(db.String(150))
+    condition_id = db.Column(db.Integer, db.ForeignKey('condition.condition_id'))
+    ModelID = db.Column(db.Integer, db.ForeignKey('model.ModelID'))
+    status_id = db.Column(db.Integer, db.ForeignKey('status.status_id'))
+    stockroom_id = db.Column(db.Integer, db.ForeignKey('stockroom.stockroom_id'))
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(255))
-    location = db.Column(db.String(255))
-    status = db.Column(db.String(255))
-
-    def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class Employee(db.Model):
+    __tablename__ = 'employee'
+    EmployeeNumber = db.Column(db.Integer, primary_key=True)
+    FirstName = db.Column(db.Text)
+    LastName = db.Column(db.Text)
+    Phone = db.Column(db.BigInteger)
+    Email = db.Column(db.String(255))
+    accesslevel_id = db.Column(db.Integer)  # Assuming this is already defined in your model
+    asset_serial_number = db.Column(db.Integer, db.ForeignKey('asset.SerialNumber'))
+    asset = db.relationship('Asset', backref='employees', lazy=True)
 
 
 # Routes
@@ -31,51 +63,181 @@ class Asset(db.Model):
 def index():
     return jsonify({"message": "Welcome to the Flask Backend!"})
 
+# Routes for Model Table
+@app.route('/models', methods=['GET'])
+def get_all_models():
+    models = Model.query.all()
+    return jsonify([model.serialize for model in models])
 
-@app.route("/assets", methods=["GET"])
+@app.route('/model', methods=['POST'])
+def add_model():
+    data = request.json
+    new_model = Model(ModelName=data['ModelName'])
+    db.session.add(new_model)
+    db.session.commit()
+    return jsonify(new_model.serialize), 201
+
+@app.route('/model/<int:model_id>', methods=['PUT'])
+def update_model(model_id):
+    model = Model.query.get_or_404(model_id)
+    data = request.json
+    model.ModelName = data['ModelName']
+    db.session.commit()
+    return jsonify(model.serialize)
+
+@app.route('/model/<int:model_id>', methods=['DELETE'])
+def delete_model(model_id):
+    model = Model.query.get_or_404(model_id)
+    db.session.delete(model)
+    db.session.commit()
+    return jsonify({'message': 'Model deleted'}), 204
+
+#Routes for Asset table
+@app.route('/assets', methods=['GET'])
 def get_all_assets():
     assets = Asset.query.all()
-    return jsonify([asset.as_dict() for asset in assets])
+    return jsonify([asset.serialize for asset in assets])
 
-
-@app.route("/assets", methods=["POST"])
-def insert_asset():
+@app.route('/asset', methods=['POST'])
+def add_asset():
     data = request.json
-    new_asset = Asset(
-        name=data["name"],
-        description=data["description"],
-        location=data["location"],
-        status=data["status"],
-    )
+    new_asset = Asset(Specs=data['Specs'], condition_id=data['condition_id'], ModelID=data['ModelID'], status_id=data['status_id'], stockroom_id=data['stockroom_id'])
     db.session.add(new_asset)
     db.session.commit()
-    return jsonify(message="Asset added successfully!", id=new_asset.id)
+    return jsonify(new_asset.serialize), 201
 
-
-@app.route("/assets/<int:id>", methods=["PUT"])
-def update_asset(id):
-    asset = Asset.query.get(id)
-    if not asset:
-        return jsonify(message="Asset not found!"), 404
-
+@app.route('/asset/<int:serial_number>', methods=['PUT'])
+def update_asset(serial_number):
+    asset = Asset.query.get_or_404(serial_number)
     data = request.json
-    asset.name = data["name"]
-    asset.description = data["description"]
-    asset.location = data["location"]
-    asset.status = data["status"]
+    asset.Notes = data['Notes']
     db.session.commit()
-    return jsonify(message="Asset updated successfully!")
+    return jsonify(asset.serialize)
 
-
-@app.route("/assets/<int:id>", methods=["DELETE"])
-def delete_asset(id):
-    asset = Asset.query.get(id)
-    if not asset:
-        return jsonify(message="Asset not found!"), 404
-
+@app.route('/asset/<int:serial_number>', methods=['DELETE'])
+def delete_asset(serial_number):
+    asset = Asset.query.get_or_404(serial_number)
     db.session.delete(asset)
     db.session.commit()
-    return jsonify(message="Asset deleted successfully!")
+    return jsonify({'message': 'Asset deleted'}), 204
+
+#Routes for Employee Table
+@app.route('/employees', methods=['GET'])
+def get_all_employees():
+    employees = Employee.query.all()
+    return jsonify([employee.serialize for employee in employees])
+
+@app.route('/employee', methods=['POST'])
+def add_employee():
+    data = request.json
+    new_employee = Employee(FirstName=data['FirstName'], LastName=data['LastName'], Phone=data['Phone'], Email=data['Email'], accesslevel_id=data['accesslevel_id'], asset_serial_number=data['asset_serial_number'])
+    db.session.add(new_employee)
+    db.session.commit()
+    return jsonify(new_employee.serialize), 201
+
+@app.route('/employee/<int:employee_number>', methods=['PUT'])
+def update_employee(employee_number):
+    employee = Employee.query.get_or_404(employee_number)
+    data = request.json
+    employee.FirstName = data['FirstName']
+    # Update other fields as necessary
+    db.session.commit()
+    return jsonify(employee.serialize)
+
+@app.route('/employee/<int:employee_number>', methods=['DELETE'])
+def delete_employee(employee_number):
+    employee = Employee.query.get_or_404(employee_number)
+    db.session.delete(employee)
+    db.session.commit()
+    return jsonify({'message': 'Employee deleted'}), 204
+
+#Routes for Condition Table
+@app.route('/conditions', methods=['GET'])
+def get_all_conditions():
+    conditions = Condition.query.all()
+    return jsonify([condition.serialize for condition in conditions])
+
+@app.route('/condition', methods=['POST'])
+def add_condition():
+    data = request.json
+    new_condition = Condition(name=data['name'])
+    db.session.add(new_condition)
+    db.session.commit()
+    return jsonify(new_condition.serialize), 201
+
+@app.route('/condition/<int:condition_id>', methods=['PUT'])
+def update_condition(condition_id):
+    condition = Condition.query.get_or_404(condition_id)
+    data = request.json
+    condition.name = data['name']
+    db.session.commit()
+    return jsonify(condition.serialize)
+
+@app.route('/condition/<int:condition_id>', methods=['DELETE'])
+def delete_condition(condition_id):
+    condition = Condition.query.get_or_404(condition_id)
+    db.session.delete(condition)
+    db.session.commit()
+    return jsonify({'message': 'Condition deleted'}), 204
+
+#Routes for Stockroom Table
+@app.route('/stockrooms', methods=['GET'])
+def get_all_stockrooms():
+    stockrooms = Stockroom.query.all()
+    return jsonify([stockroom.serialize for stockroom in stockrooms])
+
+@app.route('/stockroom', methods=['POST'])
+def add_stockroom():
+    data = request.json
+    new_stockroom = Stockroom(name=data['name'])
+    db.session.add(new_stockroom)
+    db.session.commit()
+    return jsonify(new_stockroom.serialize), 201
+
+@app.route('/stockroom/<int:stockroom_id>', methods=['PUT'])
+def update_stockroom(stockroom_id):
+    stockroom = Stockroom.query.get_or_404(stockroom_id)
+    data = request.json
+    stockroom.name = data['name']
+    db.session.commit()
+    return jsonify(stockroom.serialize)
+
+@app.route('/stockroom/<int:stockroom_id>', methods=['DELETE'])
+def delete_stockroom(stockroom_id):
+    stockroom = Stockroom.query.get_or_404(stockroom_id)
+    db.session.delete(stockroom)
+    db.session.commit()
+    return jsonify({'message': 'Stockroom deleted'}), 204
+
+#Routes for Status table
+@app.route('/statuses', methods=['GET'])
+def get_all_statuses():
+    statuses = Status.query.all()
+    return jsonify([status.serialize for status in statuses])
+
+@app.route('/status', methods=['POST'])
+def add_status():
+    data = request.json
+    new_status = Status(name=data['name'])
+    db.session.add(new_status)
+    db.session.commit()
+    return jsonify(new_status.serialize), 201
+
+@app.route('/status/<int:status_id>', methods=['PUT'])
+def update_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    data = request.json
+    status.name = data['name']
+    db.session.commit()
+    return jsonify(status.serialize)
+
+@app.route('/status/<int:status_id>', methods=['DELETE'])
+def delete_status(status_id):
+    status = Status.query.get_or_404(status_id)
+    db.session.delete(status)
+    db.session.commit()
+    return jsonify({'message': 'Status deleted'}), 204
+
 
 
 if __name__ == "__main__":
