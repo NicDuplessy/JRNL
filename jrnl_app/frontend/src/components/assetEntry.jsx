@@ -10,30 +10,47 @@ function AssetEntry() {
   // Fetch data from the backend
   useEffect(() => {
     // Fetch models
-    fetch("http://localhost:5000/models")
+    fetch("http://127.0.0.1:5000/models")
       .then((response) => response.json())
-      .then((data) => setModels(data));
+      .then((data) => setModels(data))
+      .catch((error) => console.error("Error", error));
 
     // Fetch conditions
-    fetch("http://localhost:5000/conditions")
+    fetch("http://127.0.0.1:5000/conditions")
       .then((response) => response.json())
       .then((data) => setConditions(data));
 
     // Fetch statuses
-    fetch("http://localhost:5000/statuses")
+    fetch("http://127.0.0.1:5000/statuses")
       .then((response) => response.json())
       .then((data) => setStatuses(data));
 
     // Fetch employees
-    fetch("http://localhost:5000/employees")
+    fetch("http://127.0.0.1:5000/employees")
       .then((response) => response.json())
       .then((data) => setEmployees(data));
   }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (name === "serialNum") {
-      setSerialNum(value);
+    switch (name) {
+      case "serialNum":
+        setSerialNum(value);
+        break;
+      case "model":
+        setModels(value);
+        break;
+      case "condition":
+        setConditions(value);
+        break;
+      case "status":
+        setStatuses(value);
+        break;
+      case "assignedTo":
+        setEmployees(value);
+        break;
+      default:
+        break;
     }
   };
 
@@ -41,22 +58,22 @@ function AssetEntry() {
     event.preventDefault();
 
     // Construct the asset data object from the state variables
-    /* const assetData = {
-      serialNum: setSerialNum,
-      model: setModels, // The state variable for the selected model
-      condition: setConditions, // The state variable for the selected condition
-      status: setStatuses, // The state variable for the selected status
-      assignedTo: setEmployees, // The state variable for the selected employee
-    };*/
+    const assetData = {
+      serialNum: serialNum,
+      model: models, // The state variable for the selected model
+      condition: conditions, // The state variable for the selected condition
+      status: statuses, // The state variable for the selected status
+      assignedTo: employees, // The state variable for the selected employee;
+    };
 
     // POST request to the Flask backend
-    fetch("http://localhost:5000/asset", {
+    fetch("http://127.0.0.1:5000/asset", {
       // Update the endpoint to '/asset'
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      //body: JSON.stringify(assetData),
+      body: JSON.stringify(assetData),
     })
       .then((response) => {
         if (!response.ok) {
