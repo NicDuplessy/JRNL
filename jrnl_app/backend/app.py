@@ -18,24 +18,48 @@ class Model(db.Model):
     ModelID = db.Column(db.Integer, primary_key=True)
     ModelName = db.Column(db.String(30))
     assets = db.relationship('Asset', backref='model', lazy=True)
+    @property
+    def serialize(self):
+        return {
+            "ModelID": self.ModelID,
+            "ModelName": self.ModelName
+        }
 
 class Condition(db.Model):
     __tablename__ = 'condition'
     condition_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     assets = db.relationship('Asset', backref='condition', lazy=True)
+    @property
+    def serialize(self):
+        return {
+            "condition_id": self.condition_id,
+            "name": self.name
+        }
 
 class Stockroom(db.Model):
     __tablename__ = 'stockroom'
     stockroom_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     assets = db.relationship('Asset', backref='stockroom', lazy=True)
+    @property
+    def serialize(self):
+        return {
+            "stockroom_id": self.stockroom_id,
+            "name": self.name
+        }
 
 class Status(db.Model):
     __tablename__ = 'status'
     status_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     assets = db.relationship('Asset', backref='status', lazy=True)
+    @property
+    def serialize(self):
+        return {
+            "status_id": self.status_id,
+            "name": self.name
+        }
 
 class Asset(db.Model):
     __tablename__ = 'asset'
@@ -45,6 +69,16 @@ class Asset(db.Model):
     ModelID = db.Column(db.Integer, db.ForeignKey('model.ModelID'))
     status_id = db.Column(db.Integer, db.ForeignKey('status.status_id'))
     stockroom_id = db.Column(db.Integer, db.ForeignKey('stockroom.stockroom_id'))
+    @property
+    def serialize(self):
+        return {
+            "SerialNumber": self.SerialNumber,
+            "Specs": self.Specs,
+            "condition_id": self.condition_id,
+            "ModelID": self.ModelID,
+            "status_id": self.status_id,
+            "stockroom_id": self.stockroom_id
+        }
 
 class Employee(db.Model):
     __tablename__ = 'employee'
@@ -54,8 +88,20 @@ class Employee(db.Model):
     Phone = db.Column(db.BigInteger)
     Email = db.Column(db.String(255))
     accesslevel_id = db.Column(db.Integer)  # Assuming this is already defined in your model
-    asset_serial_number = db.Column(db.Integer, db.ForeignKey('asset.SerialNumber'))
+    AssetSerialNumber = db.Column(db.Integer, db.ForeignKey('asset.SerialNumber'))
     asset = db.relationship('Asset', backref='employees', lazy=True)
+    @property
+    def serialize(self):
+        return {
+            "EmployeeNumber": self.EmployeeNumber,
+            "FirstName": self.FirstName,
+            "LastName": self.LastName,
+            "Phone": self.Phone,
+            "Email": self.Email,
+            "accesslevel_id": self.accesslevel_id,
+            "AssetSerialNumber": self.AssetSerialNumber
+        }
+    
 
 
 # Routes
@@ -101,7 +147,7 @@ def get_all_assets():
 @app.route('/asset', methods=['POST'])
 def add_asset():
     data = request.json
-    new_asset = Asset(Specs=data['Specs'], condition_id=data['condition_id'], ModelID=data['ModelID'], status_id=data['status_id'], stockroom_id=data['stockroom_id'])
+    new_asset = Asset(condition_id=data['condition_id'], ModelID=data['ModelID'], status_id=data['status_id'], stockroom_id=data['stockroom_id'])
     db.session.add(new_asset)
     db.session.commit()
     return jsonify(new_asset.serialize), 201
@@ -130,7 +176,7 @@ def get_all_employees():
 @app.route('/employee', methods=['POST'])
 def add_employee():
     data = request.json
-    new_employee = Employee(FirstName=data['FirstName'], LastName=data['LastName'], Phone=data['Phone'], Email=data['Email'], accesslevel_id=data['accesslevel_id'], asset_serial_number=data['asset_serial_number'])
+    new_employee = Employee(FirstName=data['FirstName'], LastName=data['LastName'], Phone=data['Phone'], Email=data['Email'], accesslevel_id=data['accesslevel_id'], AssetSerialNumber=data['AssetSerialNumber'])
     db.session.add(new_employee)
     db.session.commit()
     return jsonify(new_employee.serialize), 201
