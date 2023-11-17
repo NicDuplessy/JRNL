@@ -1,11 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function AssetEntry() {
   const [serialNum, setSerialNum] = useState("");
-  const [status, setStatus] = useState("");
-  const [model, setModel] = useState("");
-  const [condition, setCondition] = useState("");
-  const [assignedTo, setAssignedTo] = useState("");
+  const [models, setModels] = useState([]); // For model data
+  const [conditions, setConditions] = useState([]); // For condition data
+  const [statuses, setStatuses] = useState([]); // For status data
+  const [employees, setEmployees] = useState([]); // For employee data
+
+  // Fetch data from the backend
+  useEffect(() => {
+    // Fetch models
+    fetch("http://127.0.0.1:5000/models")
+      .then((response) => response.json())
+      .then((data) => setModels(data))
+      .catch((error) => console.error("Error", error));
+
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data));
+
+    // Fetch statuses
+    fetch("http://127.0.0.1:5000/statuses")
+      .then((response) => response.json())
+      .then((data) => setStatuses(data));
+
+    // Fetch employees
+    fetch("http://127.0.0.1:5000/employees")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data));
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -13,108 +37,117 @@ function AssetEntry() {
       case "serialNum":
         setSerialNum(value);
         break;
-      case "status":
-        setStatus(value);
-        break;
       case "model":
-        setModel(value);
+        setModels(value);
         break;
       case "condition":
-        setCondition(value);
+        setConditions(value);
+        break;
+      case "status":
+        setStatuses(value);
         break;
       case "assignedTo":
-        setAssignedTo(value);
+        setEmployees(value);
         break;
       default:
         break;
     }
   };
 
-  const handleSubmit = () => {
-    const formData = {
-      name: serialNum, // Assuming serialNum is being used as the asset name
-      description: model, // Assuming model is being used as the description
-      location: assignedTo,
-      status: status,
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    // Construct the asset data object from the state variables
+    const assetData = {
+      serialNum: serialNum,
+      model: models, // The state variable for the selected model
+      condition: conditions, // The state variable for the selected condition
+      status: statuses, // The state variable for the selected status
+      assignedTo: employees, // The state variable for the selected employee;
     };
 
-    fetch("http://localhost:5000/assets", {
+    // POST request to the Flask backend
+    fetch("http://127.0.0.1:5000/asset", {
+      // Update the endpoint to '/asset'
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(assetData),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          console.log(data.message); // Log success message from server
-        } else {
-          console.error("Error:", data);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+        // Handle success - for example, you might clear the form or display a success message
       })
       .catch((error) => {
         console.error("Error:", error);
+        // Handle errors - for example, display an error message to the user
       });
   };
 
   return (
     <div>
-      <input
-        type="text"
-        name="serialNum"
-        placeholder="Serial Number"
-        value={serialNum}
-        onChange={handleInputChange}
-      />
-      <select
-        name="status"
-        value={status}
-        onChange={handleInputChange}
-        placeholder="Status"
-      >
-        <option value="">Select Status</option>
-        <option value="In Use">In Use</option>
-        <option value="Available">Available</option>
-        <option value="On Order">On Order</option>
-        <option value="Maintenance">Maintenance</option>
-        <option value="Unknown">Unknown</option>
-        <option value="Retired">Retired</option>
-      </select>
-      <select
-        name="model"
-        value={model}
-        onChange={handleInputChange}
-        placeholder="Model"
-      >
-        <option value="">Select Model</option>
-        <option value="Spectre">Spectre</option>
-        <option value="ThinkPad">ThinkPad</option>
-        <option value="Zenbook">Zenbook</option>
-        <option value="XPS">XPS</option>
-        <option value="MacBook">MacBook</option>
-      </select>
-      <select
-        name="condition"
-        value={condition}
-        onChange={handleInputChange}
-        placeholder="Condition"
-      >
-        <option value="">Select Condition</option>
-        <option value="New">New</option>
-        <option value="Good">Good</option>
-        <option value="Fair">Fair</option>
-        <option value="Unknown">Unknown</option>
-        <option value="Scrap">Scrap</option>
-      </select>
-      <input
-        type="text"
-        name="assignedTo"
-        placeholder="Assigned To"
-        value={assignedTo}
-        onChange={handleInputChange}
-      />
-      <button onClick={handleSubmit}>Submit</button>
+      <h2>Asset Entry Form</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Serial Number:</label>
+          <input
+            type="text"
+            name="serialNum"
+            value={serialNum}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label>Model:</label>
+          <select name="model" onChange={handleInputChange}>
+            {models.map((m) => (
+              <option key={m.ModelID} value={m.ModelID}>
+                {m.ModelName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Condition:</label>
+          <select name="condition" onChange={handleInputChange}>
+            {conditions.map((c) => (
+              <option key={c.condition_id} value={c.condition_id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Status:</label>
+          <select name="status" onChange={handleInputChange}>
+            {statuses.map((s) => (
+              <option key={s.status_id} value={s.status_id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Assigned To (Employee):</label>
+          <select name="assignedTo" onChange={handleInputChange}>
+            {employees.map((e) => (
+              <option key={e.EmployeeNumber} value={e.EmployeeNumber}>
+                {e.FirstName} {e.LastName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
     </div>
   );
 }
