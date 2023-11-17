@@ -88,7 +88,7 @@ class Employee(db.Model):
     Phone = db.Column(db.BigInteger)
     Email = db.Column(db.String(255))
     accesslevel_id = db.Column(db.Integer)  # Assuming this is already defined in your model
-    asset_serial_number = db.Column(db.Integer, db.ForeignKey('asset.SerialNumber'))
+    AssetSerialNumber = db.Column(db.Integer, db.ForeignKey('asset.SerialNumber'))
     asset = db.relationship('Asset', backref='employees', lazy=True)
     @property
     def serialize(self):
@@ -99,7 +99,7 @@ class Employee(db.Model):
             "Phone": self.Phone,
             "Email": self.Email,
             "accesslevel_id": self.accesslevel_id,
-            "asset_serial_number": self.asset_serial_number
+            "AssetSerialNumber": self.AssetSerialNumber
         }
     
 
@@ -147,7 +147,7 @@ def get_all_assets():
 @app.route('/asset', methods=['POST'])
 def add_asset():
     data = request.json
-    new_asset = Asset(Specs=data['Specs'], condition_id=data['condition_id'], ModelID=data['ModelID'], status_id=data['status_id'], stockroom_id=data['stockroom_id'])
+    new_asset = Asset(condition_id=data['condition_id'], ModelID=data['ModelID'], status_id=data['status_id'], stockroom_id=data['stockroom_id'])
     db.session.add(new_asset)
     db.session.commit()
     return jsonify(new_asset.serialize), 201
@@ -176,7 +176,7 @@ def get_all_employees():
 @app.route('/employee', methods=['POST'])
 def add_employee():
     data = request.json
-    new_employee = Employee(FirstName=data['FirstName'], LastName=data['LastName'], Phone=data['Phone'], Email=data['Email'], accesslevel_id=data['accesslevel_id'], asset_serial_number=data['asset_serial_number'])
+    new_employee = Employee(FirstName=data['FirstName'], LastName=data['LastName'], Phone=data['Phone'], Email=data['Email'], accesslevel_id=data['accesslevel_id'], AssetSerialNumber=data['AssetSerialNumber'])
     db.session.add(new_employee)
     db.session.commit()
     return jsonify(new_employee.serialize), 201
