@@ -43,14 +43,14 @@ function EntryView() {
   return (
     <div className="entry-view">
       <div className="logo-view">
-        <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" />
-        <h1 className="dashboard-title">ENTRY</h1>
+        <Link to="/"> <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" /></Link>
+        <h1 className="dashboard-title">JRNL</h1>
         <p className="dashboard-subtitle">Add assets to the database.</p>
       </div>
       <div className="view-tiles-container">
         <div className="view-icon-container">
           <img src={EntryIcon} alt="Entry" className="view-icon" />
-          {/* Removed the "ENTRY" heading here */}
+          <p className="dashboard-subtitle">ENTRY</p>
         </div>
         <div className="asset-entry-container">
           <AssetEntry />
@@ -64,13 +64,14 @@ function TrackingView() {
   return (
     <div className="tracking-view">
       <div className="logo-view">
-        <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" />
-        <h1 className="dashboard-title">TRACKING</h1>
+      <Link to="/"> <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" /></Link>
+        <h1 className="dashboard-title">JRNL</h1>
         <p className="dashboard-subtitle">Track assets throughout their lifecycle.</p>
       </div>
       <div className="view-tiles-container">
         <div className="view-icon-container" style={{ backgroundColor: '#51abb2' }}>
           <img src={NavigationIcon} alt="Tracking" className="view-icon" />
+          <p className="dashboard-subtitle">TRACKING</p>
         </div>
         <div className="asset-entry-container">
           <AssetTracking />
@@ -84,13 +85,14 @@ function FulfillmentView() {
   return (
     <div className="fulfillment-view">
       <div className="logo-view">
-        <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" />
-        <h1 className="dashboard-title">FULFILLMENT</h1>
+      <Link to="/"> <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" /></Link>
+        <h1 className="dashboard-title">JRNL</h1>
         <p className="dashboard-subtitle">View employee requests for assets.</p>
       </div>
       <div className="view-tiles-container">
         <div className="view-icon-container" style={{ backgroundColor: '#e16539' }}>
           <img src={FulfillmentIcon} alt="Fulfillment" className="view-icon" />
+          <p className="dashboard-subtitle">FULFILLMENT</p>
         </div>
         <div className="asset-entry-container">
           <AssetFulfillment />
@@ -104,13 +106,14 @@ function RequestView() {
   return (
     <div className="request-view">
       <div className="logo-view">
-        <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" />
-        <h1 className="dashboard-title">REQUEST</h1>
+      <Link to="/"> <img src={JRNLLogo} alt="JRNL Logo" className="dashboard-logo" /></Link>
+        <h1 className="dashboard-title">JRNL</h1>
         <p className="dashboard-subtitle">New asset requisition and maintenance.</p>
       </div>
       <div className="view-tiles-container">
         <div className="view-icon-container" style={{ backgroundColor: '#e16539' }}>
           <img src={RequestIcon} alt="Request" className="view-icon" />
+          <p className="dashboard-subtitle">REQUEST</p>
         </div>
         <div className="asset-entry-container">
           <AssetRequest />
