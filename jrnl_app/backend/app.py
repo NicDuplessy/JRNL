@@ -13,7 +13,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-
 class Model(db.Model):
     __tablename__ = "model"
     ModelID = db.Column(db.Integer, primary_key=True)
