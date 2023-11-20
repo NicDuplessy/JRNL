@@ -111,12 +111,12 @@ function AssetEntry() {
         </div>
         <div>
           <label>Model:</label>
-          <select name="model" onChange={handleInputChange}>
-            {models.map((m) => (
+          <select name="model" value={selectedModel} onChange={handleInputChange}>
+           {models.map((m) => (
               <option key={m.ModelID} value={m.ModelID}>
                 {m.ModelName}
               </option>
-            ))}
+           ))}
           </select>
         </div>
         <div>
