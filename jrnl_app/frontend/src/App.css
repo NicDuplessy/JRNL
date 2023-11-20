@@ -1,3 +1,4 @@
+/* Global Styles */
 @font-face {
   font-family: 'Montserrat-Light-Alt1';
   src: url('./MontserratAlt1-Light.woff2') format('woff2');
@@ -5,6 +6,22 @@
   font-weight: 300;
   font-display: swap;
 }
+
+body {
+  background-color: #303030;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat-Light-Alt1', sans-serif;
+}
+
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+}
+
+h2, p {
+  color: #000000;
+}
+
 
 /* Styles for the dashboard container */
 .dashboard {
@@ -233,24 +250,10 @@
 }
 
 
-
 /* Specific background colors for the view-icon-container */
 .tracking-view .view-icon-container { background-color: #51abb2; }
 .fulfillment-view .view-icon-container { background-color: #e16539; }
 .request-view .view-icon-container { background-color: #e16539; }
-
-
-/* Text color for headings and other texts */
-h2, p {
-  color: #000000; /* Text colors */
-}
-
-body {
-  background-color: #303030; /* Set the body background to dark gray */
-  margin: 0;
-  padding: 0;
-  font-family: 'Montserrat-Light-Alt1', sans-serif;
-}
 
 .dashboard-header {
   display: flex;
@@ -270,14 +273,6 @@ body {
   color: #f0dfc8; /* Light text color for the title */
   font-size: 4.0em;
 }
-
-a,
-a:hover,
-a:focus,
-a:active {
-  text-decoration: none;
-}
-
 
 /* Styles for the Left-Side Tile */
 .entry-view .logo-view, .tracking-view .logo-view, .fulfillment-view .logo-view, .request-view .logo-view {

@@ -6,6 +6,11 @@ function AssetEntry() {
   const [conditions, setConditions] = useState([]); // For condition data
   const [statuses, setStatuses] = useState([]); // For status data
   const [employees, setEmployees] = useState([]); // For employee data
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+
 
   // Fetch data from the backend
   useEffect(() => {
@@ -38,22 +43,22 @@ function AssetEntry() {
         setSerialNum(value);
         break;
       case "model":
-        setModels(value);
+        setSelectedModel(value);
         break;
       case "condition":
-        setConditions(value);
+        setSelectedCondition(value);
         break;
       case "status":
-        setStatuses(value);
+        setSelectedStatus(value);
         break;
       case "assignedTo":
-        setEmployees(value);
+        setSelectedEmployee(value);
         break;
       default:
         break;
     }
   };
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -106,12 +111,12 @@ function AssetEntry() {
         </div>
         <div>
           <label>Model:</label>
-          <select name="model" onChange={handleInputChange}>
-            {models.map((m) => (
+          <select name="model" value={selectedModel} onChange={handleInputChange}>
+           {models.map((m) => (
               <option key={m.ModelID} value={m.ModelID}>
                 {m.ModelName}
               </option>
-            ))}
+           ))}
           </select>
         </div>
         <div>
