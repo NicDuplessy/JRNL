@@ -121,7 +121,7 @@ function AssetEntry() {
         </div>
         <div>
           <label>Condition:</label>
-          <select name="condition" onChange={handleInputChange}>
+          <select name="condition" value={selectedCondition} onChange={handleInputChange}>
             {conditions.map((c) => (
               <option key={c.condition_id} value={c.condition_id}>
                 {c.name}
@@ -131,7 +131,7 @@ function AssetEntry() {
         </div>
         <div>
           <label>Status:</label>
-          <select name="status" onChange={handleInputChange}>
+          <select name="status" value={selectedStatus} onChange={handleInputChange}>
             {statuses.map((s) => (
               <option key={s.status_id} value={s.status_id}>
                 {s.name}
@@ -141,7 +141,7 @@ function AssetEntry() {
         </div>
         <div>
           <label>Assigned To (Employee):</label>
-          <select name="assignedTo" onChange={handleInputChange}>
+          <select name="assignedTo" value={selectedEmployee} onChange={handleInputChange}>
             {employees.map((e) => (
               <option key={e.EmployeeNumber} value={e.EmployeeNumber}>
                 {e.FirstName} {e.LastName}
