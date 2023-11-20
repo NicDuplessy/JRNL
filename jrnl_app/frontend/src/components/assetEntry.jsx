@@ -64,11 +64,13 @@ function AssetEntry() {
     // Construct the asset data object from the state variables
     const assetData = {
       serialNum: serialNum,
-      model: models, // The state variable for the selected model
-      condition: conditions, // The state variable for the selected condition
-      status: statuses, // The state variable for the selected status
-      assignedTo: employees, // The state variable for the selected employee;
+      ModelID: selectedModel,      // Ensure this matches the backend expectation
+      condition_id: selectedCondition, // Ensure this matches the backend expectation
+      status_id: selectedStatus,   // Ensure this matches the backend expectation
+      assignedTo: selectedEmployee,
+      // ... any other fields
     };
+    
 
     // POST request to the Flask backend
     fetch("http://127.0.0.1:5000/asset", {
