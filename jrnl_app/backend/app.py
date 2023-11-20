@@ -284,7 +284,5 @@ def delete_status(status_id):
     db.session.commit()
     return jsonify({'message': 'Status deleted'}), 204
 
-
-
 if __name__ == "__main__":
     app.run(debug=True)

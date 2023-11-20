@@ -1,52 +1,364 @@
-.App {
-  text-align: center;
-  background-color: #656673;
+/* Global Styles */
+@font-face {
+  font-family: 'Montserrat-Light-Alt1';
+  src: url('./MontserratAlt1-Light.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background-color: #303030;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat-Light-Alt1', sans-serif;
 }
 
-.App-header {
-  background-color: #1c2037;
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+}
+
+h2, p {
+  color: #000000;
+}
+
+
+/* Styles for the dashboard container */
+.dashboard {
+  display: grid;
+  grid-template-areas: "logo tiles";
+  grid-template-columns: 1fr 1fr; /* Adjust the ratio to give more space to the left tile */
+  gap: 16px;
+  padding: 16px;
+  background-color: #303030; /* Dark gray background */
+}
+
+/* Styles for the large left-side tile */
+.dashboard-logo-tile {
+  grid-area: logo;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center; /* Center text horizontally */
+  justify-content: center;
+  background-color: #333; /* Your company's dark color for the tile */
+  color: #f0dfc8; /* Light text color */
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust the container of the logo */
+.dashboard-logo {
+  font-size: 3em; /* Enlarge the font size */
+  margin: 0; /* Add space above and below */
+  text-align: center; /* Center the text horizontally */
+  margin-bottom: 20px;
+}
+
+.dashboard-title {
+  font-size: 2em; /* Adjust as necessary */
+  margin: 0;
+  margin-bottom: 0.5em; /* Add some space between title and subtitle */
+}
+
+.dashboard-subtitle {
+  font-size: 1.2em; /* Adjust as necessary */
+  margin: 0;
+}
+
+/* Styles for the dashboard tiles */
+.dashboard-tiles-container {
+  grid-area: tiles;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr; /* Two rows to make tiles square or of uniform height */
+  gap: 16px;
+  
+}
+
+/* Styles for the dashboard tiles */
+.dashboard-tile {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font: Montserrat Light Alt1;
-  font-size: calc(10px + 2vmin);
-  color: #f75926;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  color: #f0dfc8; /* Light text color */
+  background-color: #e16539; /* Default tile background color */
+  padding: 32px; /* Adjust padding as needed */
+  height: 200px; /* Example fixed height, adjust as needed */
 }
 
-.h1 {
-  display: flex;
-  justify-content: center;
-  color: #f75926;
+/* Styles for the dashboard tiles */
+.view-tiles-container {
+  grid-area: tiles;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr 1fr; /* Two rows to make tiles square or of uniform height */
+  gap: 16px;
+  
 }
 
-.Home-page {
-  justify-content: center;
-  align-items: center;
+/* Styles for the dashboard tiles */
+.view-tile {
   display: flex;
-  background-color: #1c2037;
-  color: #f75926;
-}
-.Menu ul {
-  justify-content: center;
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  background-color: white;
-  padding-left: auto;
-  padding-right: auto;
-  text-align: justify;
-  flex-direction: row;
-  list-style-type: none;
+  justify-content: center;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  color: #f0dfc8; /* Light text color */
+  background-color: #e16539; /* Default tile background color */
+  padding: 32px; /* Adjust padding as needed */
+  height: 200px; /* Example fixed height, adjust as needed */
 }
 
-.Home-message {
-  justify-content: center;
-  display: center;
-  align-items: center;
-  background-color: white;
+.dashboard-tile:hover {
+  transform: translateY(-5px);
 }
+
+.dashboard-tile img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.dashboard-tile p {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tile-specific colors */
+.dashboard-tile:nth-child(1) { background-color: #51abb2; } /* Entry       */
+.dashboard-tile:nth-child(2) { background-color: #f0dfc8; } /* Fulfillment */
+.dashboard-tile:nth-child(3) { background-color: #f0dfc8; } /* Tracking    */
+.dashboard-tile:nth-child(4) { background-color: #e16539; } /* Request     */
+
+/* View-specific styles for EntryView */
+.entry-view, .tracking-view, .fulfillment-view, .request-view {
+  display: flex;
+  height: 100vh;
+  padding: 20px;
+  color: #f0dfc8; /* Light text color */
+  border-radius: 8px; /* Added rounded corners */
+  overflow: hidden; /* Ensure the child elements do not overflow the rounded corners */
+}
+
+
+/* Apply rounded corners to child elements */
+.entry-view .logo-view,
+.entry-view .view-icon-container,
+.entry-view .asset-entry-container {
+  border-radius: 8px;
+}
+
+/* Left side with logo */
+.entry-view .logo-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #303030; /* Dark gray background */
+  padding: 20px;
+}
+
+.entry-view .logo-view .dashboard-logo {
+  max-width: 100%;
+  height: auto;
+}
+
+.entry-view .logo-view .dashboard-title {
+  margin-top: 20px;
+}
+
+.entry-view .logo-view .dashboard-subtitle {
+  font-size: 1.5em; /* Adjust as necessary */
+}
+
+.entry-view, .tracking-view, .fulfillment-view, .request-view {
+  display: flex;
+  height: 100vh;
+  padding: 20px;
+  color: #f0dfc8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.entry-view .logo-view, .entry-view .view-tiles-container {
+  border-radius: 8px;
+}
+
+.tracking-view .logo-view, .tracking-view .view-tiles-container {
+  border-radius: 8px;
+}
+
+.fulfillment-view .logo-view, .fulfillment-view .view-tiles-container {
+  border-radius: 8px;
+}
+
+.request-view .logo-view, .request-view .view-tiles-container {
+  border-radius: 8px;
+}
+
+/* Right side split */
+.entry-view .view-tiles-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 40px); /* Adjust for padding */
+}
+
+/* Top right tile */
+.entry-view .view-tiles-container .view-icon-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #51abb2; /* Top half background color */
+  padding: 20px;
+}
+
+/* Bottom right tile for asset entry component */
+.entry-view .view-tiles-container .asset-entry-container {
+  flex: 1;
+  background-color: #f0dfc8; /* Bottom half background color */
+  padding: 20px;
+}
+
+/* Adjust the image and heading sizes as needed */
+.entry-view .view-tiles-container img {
+  max-width: 50%; /* Adjust the icon size */
+  margin-bottom: 10px;
+}
+
+.entry-view .view-tiles-containerc {
+  font-size: 1.5em; /* Adjust the heading size */
+  color: #f0dfc8; /* Text color for the heading */
+  margin: 0;
+}
+
+/* Specific styles for AssetEntry component if necessary */
+.asset-entry-container .AssetEntry {
+  /* Add styles specific to AssetEntry component here */
+}
+
+
+/* Specific background colors for the view-icon-container */
+.tracking-view .view-icon-container { background-color: #51abb2; }
+.fulfillment-view .view-icon-container { background-color: #e16539; }
+.request-view .view-icon-container { background-color: #e16539; }
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background-color: #303030; /* Same background color as the body for the header */
+}
+
+/* Adjust the logo image */
+.dashboard-logo {
+  width: auto%; /* Adjust to your preference for the size */
+  height: auto;
+  margin-bottom: 20px; /* Space below the logo */
+}
+
+.dashboard-title {
+  color: #f0dfc8; /* Light text color for the title */
+  font-size: 4.0em;
+}
+
+/* Styles for the Left-Side Tile */
+.entry-view .logo-view, .tracking-view .logo-view, .fulfillment-view .logo-view, .request-view .logo-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #303030; /* Dark gray background */
+  padding: 20px;
+}
+
+/* Styles for the Right-Side Tiles Container */
+.entry-view .view-tiles-container, .tracking-view .view-tiles-container, .fulfillment-view .view-tiles-container, .request-view .view-tiles-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 40px); /* Adjust for padding */
+  
+}
+
+/* Styles for the Top Right Tile */
+.entry-view .view-icon-container, .tracking-view .view-icon-container, .fulfillment-view .view-icon-container, .request-view .view-icon-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Styles for the Bottom Right Tile */
+.entry-view .asset-entry-container, .tracking-view .asset-entry-container, .fulfillment-view .asset-entry-container, .request-view .asset-entry-container {
+  color: #000000;
+  flex: 1;
+  padding: 20px;
+}
+
+/* Specific Styles for Tracking View */
+.tracking-view .logo-view {
+  background-color: #303030; /* Dark gray background */
+}
+.tracking-view .logo-view .dashboard-title {
+  content: "TRACKING"; /* This will not work for actual text content */
+}
+.tracking-view .logo-view .dashboard-subtitle {
+  content: "Track assets throughout their lifecycle."; /* This will not work for actual text content */
+}
+.tracking-view .view-icon-container {
+  background-color: #51abb2; /* Bright blue */
+}
+.tracking-view .asset-entry-container {
+  background-color: #f0dfc8; /* Light beige */
+}
+
+/* Specific Styles for Fulfillment View */
+.fulfillment-view .logo-view {
+  background-color: #303030; /* Dark gray background */
+}
+.fulfillment-view .logo-view .dashboard-title {
+  content: "FULFILLMENT"; /* This will not work for actual text content */
+}
+.fulfillment-view .logo-view .dashboard-subtitle {
+  content: "View employee requests for assets."; /* This will not work for actual text content */
+}
+.fulfillment-view .view-icon-container {
+  background-color: #e16539; /* Brick red */
+}
+.fulfillment-view .asset-entry-container {
+  background-color: #f0dfc8; /* Light beige */
+}
+
+/* Specific Styles for Request View */
+.request-view .logo-view {
+  background-color: #303030; /* Dark gray background */
+}
+.request-view .logo-view .dashboard-title {
+  content: "REQUEST"; /* This will not work for actual text content */
+}
+.request-view .logo-view .dashboard-subtitle {
+  content: "New asset requisition and maintenance."; /* This will not work for actual text content */
+}
+.request-view .view-icon-container {
+  background-color: #e16539; /* Brick red */
+}
+.request-view .asset-entry-container {
+  background-color: #f0dfc8; /* Light beige */
+}
+

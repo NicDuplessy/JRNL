@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Asset Request</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <img class="company-logo" src="oklogo.png" alt="Company Logo">
+        <h1 class="app-title">New Asset Request</h1>
+        <img class="app-logo" src="jrnllogo.png" alt="App Logo">
+    </header>
+    <div class="home-container">
+        <nav class="nav-bar">
+            <ul>
+                <li><a href="homepage.html">Home</a></li>
+                <li><a href="new_asset_request.html">New Asset Request</a></li>
+                <li><a href="assets.html">Assets</a></li>
+                <li><a href="request_support.html">Request Support</a></li>
+            </ul>
+        </nav>
+        <div class="main-panel">
+            <h2>New Asset Request</h2>
+            <form>
+                <div class="form-group">
+                    <label for="asset-type">Type of Asset:</label>
+                    <select id="asset-type" name="asset-type">
+                        <option value="laptop">Laptop</option>
+                        <option value="tablet">Tablet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="employee-name">Employee Name:</label>
+                    <input type="text" id="employee-name" name="employee-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="employee-id">Employee ID:</label>
+                    <input type="text" id="employee-id" name="employee-id" required>
+                </div>
+                <div class="form-group">
+                    <label for="date-requested">Date Requested:</label>
+                    <input type="date" id="date-requested" name="date-requested" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

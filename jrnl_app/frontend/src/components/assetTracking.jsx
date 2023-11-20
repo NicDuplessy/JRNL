@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 // import axios from 'axios'; // Commented out backend integration for now
 
-const AssetRetirement = () => {
+const AssetTracking = () => {
   const [assets, setAssets] = useState([]);
   const [selectedAssets, setSelectedAssets] = useState([]);
   const [criteria, setCriteria] = useState({
@@ -11,17 +12,7 @@ const AssetRetirement = () => {
   });
 
   useEffect(() => {
-    
-    // Fetch assets from the backend
-    fetch("/api/assets")
-    .then(response => response.json())
-    .then(data => {
-        setAssets(data);
-    })
-    .catch(error => {
-        console.error("Error fetching assets:", error);
-    });
-    
+    // Simulate fetching assets when the component mounts
     // Replace this with an actual backend API call
     const fetchedAssets = [
       {
@@ -45,11 +36,7 @@ const AssetRetirement = () => {
   }, []);
 
   const retireAssets = () => {
-    
-    // Send an API call to retire selected assets
-    // For now, just log the selected assets. Actual API endpoint and logic would need to be defined.
-    console.log("Assets to retire:", selectedAssets);
-     - replace with actual backend integration
+    // Simulate retiring assets - replace with actual backend integration
     console.log("Retiring assets:", selectedAssets);
     console.log("Criteria:", criteria);
 
@@ -126,4 +113,4 @@ const AssetRetirement = () => {
   );
 };
 
-export default AssetRetirement;
+export default AssetTracking;
