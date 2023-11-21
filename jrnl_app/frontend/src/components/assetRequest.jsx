@@ -1,59 +1,259 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function AssetRequest() {
-  const [typeDevice, setTypeDevice] = useState("");
-  const [requester, setRequester] = useState("");
+function AssetEntry() {
+  // const [serialNum, setSerialNum] = useState("");
+  const [requestNum, setRequestNum] = useState("");
+  const [models, setModels] = useState([]); // For model data
+  const [conditions, setConditions] = useState([]); // For condition data
+  const [statuses, setStatuses] = useState([]); // For status data
+  const [employees, setEmployees] = useState([]); // For employee data
+  const [stockrooms, setStockrooms] = useState([]); //For stockroom data
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedStockroom, setSelectedStockroom] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  // const [nextSerialNumber, setNextSerialNumber] = useState("");
+
+  const [nextRequestNumber, setNextRequestNumber] = useState("");
+
+  // Fetch data from the backend
+  useEffect(() => {
+    /* Next Serial Number Available
+      fetch("http://127.0.0.1:5000/next-serial-number")
+       .then((response) => response.json())
+       .then((data) => setNextSerialNumber(data.nextSerialNumber))
+       .catch((error) => console.error("Error fetching serial number:", error));
+       
+       */
+
+      // Next Request Number Available
+    fetch("http://127.0.0.1:5000/next-request-number")
+      .then((response) => response.json())
+     .then((data) => setNextRequestNumber(data.nextRequestNumber))
+      .catch((error) => console.error("Error fetching request number:", error));
+
+    // Fetch models
+    fetch("http://127.0.0.1:5000/models")
+      .then((response) => response.json())
+      .then((data) => setModels(data))
+      .catch((error) => console.error("Error", error));
+
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data));
+
+    // Fetch statuses
+    fetch("http://127.0.0.1:5000/statuses")
+      .then((response) => response.json())
+      .then((data) => setStatuses(data));
+
+    // Fetch employees
+    fetch("http://127.0.0.1:5000/employees")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data));
+
+    fetch("http://127.0.0.1:5000/stockrooms")
+      .then((response) => response.json())
+      .then((data) => setStockrooms(data));
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
-      case "typeDevice":
-        setTypeDevice(value);
+      /* case "serialNum":
+        setSerialNum(value);
         break;
-      case "requester":
-        setRequester(value);
+        */
+      case "requestNum":
+          setRequestNum(value);
+          break;
+      case "model":
+        setSelectedModel(value);
+        break;
+      case "condition":
+        setSelectedCondition(value);
+        break;
+      case "status":
+        setSelectedStatus(value);
+        break;
+      case "assignedTo":
+        setSelectedEmployee(value);
+        break;
+      case "stockroom":
+        setSelectedStockroom(value);
         break;
       default:
         break;
     }
   };
 
-  const handleSubmit = () => {
-    // You can handle the form submission here
-    // For example, you can log the form values to the console
-    console.log({
-      typeDevice,
-      requester,
-    });
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-    // You can also send the form data to an API or perform other actions here
+    // Construct the asset data object from the state variables
+    const assetData = {
+    //  serialNum: nextSerialNumber,
+      requestNum: nextRequestNumber,
+      ModelID: selectedModel, // Ensure this matches the backend expectation
+      condition_id: selectedCondition, // Ensure this matches the backend expectation
+      status_id: selectedStatus, // Ensure this matches the backend expectation
+      assignedTo: selectedEmployee,
+      stockroom_id: selectedStockroom,
+ 
+    };
+
+    // POST request to the Flask backend
+    fetch("http://127.0.0.1:5000/asset", {
+      // Update the endpoint to '/asset'
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(assetData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Success:", data);
+        setIsSubmitted(true);
+        // Handle success - for example, you might clear the form or display a success message
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setIsSubmitted(false);
+        // Handle errors - for example, display an error message to the user
+      });
   };
 
   return (
-    <div>
-      <select
-        name="typeDevice"
-        value={typeDevice}
-        onChange={handleInputChange}
-        placeholder="Model Needed"
-      >
-        <option value="">Select Model Needed</option>
-        <option value="Spectre">Spectre</option>
-        <option value="ThinkPad">ThinkPad</option>
-        <option value="Zenbook">Zenbook</option>
-        <option value="XPS">XPS</option>
-        <option value="MacBook">MacBook</option>
-      </select>
-      <input
-        type="text"
-        name="requester"
-        placeholder="Your name"
-        value={requester}
-        onChange={handleInputChange}
-      />
-      <button onClick={handleSubmit}>Submit</button>
+    <div className="asset-entry-form">
+      <h2>Asset Request Form</h2>
+        <form onSubmit={handleSubmit}>
+        <div>
+          <label>Request Number:</label>
+          <input
+            type="text"
+            name="requestNum"
+            value={nextRequestNumber} // still needs to be linked on the backend
+            disabled
+          />
+        </div>
+{/*        
+        <div>
+          <label>Model:</label>
+          <select
+            name="model"
+            value={selectedModel}
+            onChange={handleInputChange}
+          >
+            {models.map((m) => (
+              <option key={m.ModelID} value={m.ModelID}>
+                {m.ModelName}
+              </option>
+            ))}
+          </select>
+        </div>
+*/}
+{/*
+        <div>
+          <label>Condition:</label>
+          <select
+            name="condition"
+            value={selectedCondition}
+            onChange={handleInputChange}
+          >
+            {conditions.map((c) => (
+              <option key={c.condition_id} value={c.condition_id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+  
+        <div>
+          <label>Status:</label>
+          <select
+            name="status"
+            value={selectedStatus}
+            onChange={handleInputChange}
+          >
+            {statuses.map((s) => (
+              <option key={s.status_id} value={s.status_id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+ */}
+        <div>
+          <label>Employee:</label>
+          <select
+            name="assignedTo"
+            value={selectedEmployee}
+            onChange={handleInputChange}
+          >
+            {employees.map((e) => (
+              <option key={e.EmployeeNumber} value={e.EmployeeNumber}>
+                {e.FirstName} {e.LastName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Serial Number:</label>
+          <input
+            type="text"
+            name="requestNum"
+            value={nextRequestNumber} // still needs to be linked on the backend
+            
+          />
+        </div><div>
+          <label>Date:</label>
+          <input
+            type="text"
+            name="requestNum"
+            value={nextRequestNumber} // still needs to be linked on the backend
+            disabled
+          />
+        </div><div>
+          <label>Issue:</label>
+          <input
+            type="text"
+            name="requestNum"
+            value={nextRequestNumber} // still needs to be linked on the backend
+           
+          />
+        </div>
+{/*        
+        <div>
+          <label>Stockroom:</label>
+          <select
+            name="stockroom"
+            value={selectedStockroom}
+            onChange={handleInputChange}
+          >
+            {stockrooms.map((stockroom) => (
+              <option key={stockroom.stockroom_id} value={stockroom.stockroom_id}>
+                {stockroom.name}
+              </option>
+            ))}
+          </select>
+        </div>
+ */}      
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+      {isSubmitted && <p>Form submitted successfully!</p>} {/* Display confirmation message */}
     </div>
   );
 }
 
-export default AssetRequest;
+export default AssetEntry;
