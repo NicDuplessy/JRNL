@@ -1,74 +1,46 @@
 import React, { useState, useEffect } from "react";
 
-function AssetEntry() {
-  const [serialNum, setSerialNum] = useState("");
-  const [models, setModels] = useState([]); // For model data
-  const [conditions, setConditions] = useState([]); // For condition data
-  const [statuses, setStatuses] = useState([]); // For status data
+function AssetRequests() {
+  const [requestNumber, setRequestNumber] = useState(""); // For the next request number
+  const [serialNumbers, setSerialNumbers] = useState([]); // For serial numbers from the asset table
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState(""); // Selected serial number
   const [employees, setEmployees] = useState([]); // For employee data
-  const [stockrooms, setStockrooms] = useState([]); //For stockroom data
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedCondition, setSelectedCondition] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
-  const [selectedStockroom, setSelectedStockroom] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [nextSerialNumber, setNextSerialNumber] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState(""); // Selected employee
+  const [issue, setIssue] = useState(""); // Issue description
+  const [isSubmitted, setIsSubmitted] = useState(false); // Submission status
 
   // Fetch data from the backend
   useEffect(() => {
-    // Next Serial Number Available
-    fetch("http://127.0.0.1:5000/next-serial-number")
+    // Fetch next request number
+    fetch("http://127.0.0.1:5000/next-request-number")
       .then((response) => response.json())
-      .then((data) => setNextSerialNumber(data.nextSerialNumber))
-      .catch((error) => console.error("Error fetching serial number:", error));
+      .then((data) => setRequestNumber(data.nextRequestNumber))
+      .catch((error) => console.error("Error fetching request number:", error));
 
-    // Fetch models
-    fetch("http://127.0.0.1:5000/models")
+    // Fetch serial numbers
+    fetch("http://127.0.0.1:5000/serial-numbers")
       .then((response) => response.json())
-      .then((data) => setModels(data))
-      .catch((error) => console.error("Error", error));
+      .then((data) => setSerialNumbers(data))
+      .catch((error) => console.error("Error fetching serial numbers:", error));
 
-    // Fetch conditions
-    fetch("http://127.0.0.1:5000/conditions")
-      .then((response) => response.json())
-      .then((data) => setConditions(data));
-
-    // Fetch statuses
-    fetch("http://127.0.0.1:5000/statuses")
-      .then((response) => response.json())
-      .then((data) => setStatuses(data));
-
-    // Fetch employees
+    // Fetch employees (similar to assetEntry)
     fetch("http://127.0.0.1:5000/employees")
       .then((response) => response.json())
-      .then((data) => setEmployees(data));
-
-    fetch("http://127.0.0.1:5000/stockrooms")
-      .then((response) => response.json())
-      .then((data) => setStockrooms(data));
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error("Error fetching employees:", error));
   }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
-      case "serialNum":
-        setSerialNum(value);
-        break;
-      case "model":
-        setSelectedModel(value);
-        break;
-      case "condition":
-        setSelectedCondition(value);
-        break;
-      case "status":
-        setSelectedStatus(value);
+      case "serialNumber":
+        setSelectedSerialNumber(value);
         break;
       case "assignedTo":
         setSelectedEmployee(value);
         break;
-      case "stockroom":
-        setSelectedStockroom(value);
+      case "issue":
+        setIssue(value);
         break;
       default:
         break;
@@ -77,25 +49,20 @@ function AssetEntry() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Construct the asset data object from the state variables
-    const assetData = {
-      serialNum: nextSerialNumber,
-      ModelID: selectedModel, // Ensure this matches the backend expectation
-      condition_id: selectedCondition, // Ensure this matches the backend expectation
-      status_id: selectedStatus, // Ensure this matches the backend expectation
-      assignedTo: selectedEmployee,
-      stockroom_id: selectedStockroom,
+    const requestData = {
+      RequestNumber: requestNumber,
+      EmployeeNumber: selectedEmployee,
+      SerialNumber: selectedSerialNumber,
+      Issue: issue,
     };
 
-    // POST request to the Flask backend
-    fetch("http://127.0.0.1:5000/asset", {
-      // Update the endpoint to '/asset'
+    // POST request to Flask backend
+    fetch("http://127.0.0.1:5000/request", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(assetData),
+      body: JSON.stringify(requestData),
     })
       .then((response) => {
         if (!response.ok) {
@@ -106,66 +73,33 @@ function AssetEntry() {
       .then((data) => {
         console.log("Success:", data);
         setIsSubmitted(true);
-        // Handle success - for example, you might clear the form or display a success message
+        // Handle success
       })
       .catch((error) => {
         console.error("Error:", error);
         setIsSubmitted(false);
-        // Handle errors - for example, display an error message to the user
+        // Handle errors
       });
   };
 
   return (
-    <div className="asset-entry-form">
-      <h2>Asset Entry Form</h2>
+    <div className="asset-request-form">
+      <h2>Asset Request Form</h2>
       <form onSubmit={handleSubmit}>
         <div>
+          <label>Request Number:</label>
+          <input type="text" value={requestNumber} disabled />
+        </div>
+        <div>
           <label>Serial Number:</label>
-          <input
-            type="text"
-            name="serialNum"
-            value={nextSerialNumber}
-            disabled
-          />
-        </div>
-        <div>
-          <label>Model:</label>
           <select
-            name="model"
-            value={selectedModel}
+            name="serialNumber"
+            value={selectedSerialNumber}
             onChange={handleInputChange}
           >
-            {models.map((m) => (
-              <option key={m.ModelID} value={m.ModelID}>
-                {m.ModelName}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Condition:</label>
-          <select
-            name="condition"
-            value={selectedCondition}
-            onChange={handleInputChange}
-          >
-            {conditions.map((c) => (
-              <option key={c.condition_id} value={c.condition_id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label>Status:</label>
-          <select
-            name="status"
-            value={selectedStatus}
-            onChange={handleInputChange}
-          >
-            {statuses.map((s) => (
-              <option key={s.status_id} value={s.status_id}>
-                {s.name}
+            {serialNumbers.map((num) => (
+              <option key={num} value={num}>
+                {num}
               </option>
             ))}
           </select>
@@ -185,30 +119,22 @@ function AssetEntry() {
           </select>
         </div>
         <div>
-          <label>Stockroom:</label>
-          <select
-            name="stockroom"
-            value={selectedStockroom}
+          <label>Issue:</label>
+          <input
+            type="text"
+            name="issue"
+            maxLength="255"
+            value={issue}
             onChange={handleInputChange}
-          >
-            {stockrooms.map((stockroom) => (
-              <option
-                key={stockroom.stockroom_id}
-                value={stockroom.stockroom_id}
-              >
-                {stockroom.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
         <div>
           <button type="submit">Submit</button>
         </div>
       </form>
-      {isSubmitted && <p>Form submitted successfully!</p>}{" "}
-      {/* Display confirmation message */}
+      {isSubmitted && <p>Form submitted successfully!</p>}
     </div>
   );
 }
 
-export default AssetEntry;
+export default AssetRequests;
