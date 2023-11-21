@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react";
 function AssetRequests() {
   const [requestNumber, setRequestNumber] = useState(""); // For the next request number
   const [serialNumbers, setSerialNumbers] = useState([]); // For serial numbers from the asset table
-  const [selectedSerialNumber, setSelectedSerialNumber] = useState(""); // Selected serial number
   const [employees, setEmployees] = useState([]); // For employee data
   const [selectedEmployee, setSelectedEmployee] = useState(""); // Selected employee
   const [issue, setIssue] = useState(""); // Issue description
   const [isSubmitted, setIsSubmitted] = useState(false); // Submission status
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState("");
 
   // Fetch data from the backend
   useEffect(() => {
@@ -18,7 +18,7 @@ function AssetRequests() {
       .catch((error) => console.error("Error fetching request number:", error));
 
     // Fetch serial numbers
-    fetch("http://127.0.0.1:5000/serial-numbers")
+    fetch("http://127.0.0.1:5000/next-serial-number")
       .then((response) => response.json())
       .then((data) => setSerialNumbers(data))
       .catch((error) => console.error("Error fetching serial numbers:", error));
