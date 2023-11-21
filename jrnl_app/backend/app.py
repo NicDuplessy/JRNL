@@ -13,6 +13,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+
 class Model(db.Model):
     __tablename__ = "model"
     ModelID = db.Column(db.Integer, primary_key=True)
@@ -60,7 +61,6 @@ class Status(db.Model):
 class Asset(db.Model):
     __tablename__ = "asset"
     SerialNumber = db.Column(db.Integer, primary_key=True)
-    Specs = db.Column(db.String(150))
     condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
     ModelID = db.Column(db.Integer, db.ForeignKey("model.ModelID"))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
@@ -70,7 +70,6 @@ class Asset(db.Model):
     def serialize(self):
         return {
             "SerialNumber": self.SerialNumber,
-            "Specs": self.Specs,
             "condition_id": self.condition_id,
             "ModelID": self.ModelID,
             "status_id": self.status_id,
