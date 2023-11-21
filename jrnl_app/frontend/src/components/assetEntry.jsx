@@ -12,6 +12,7 @@ function AssetEntry() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedStockroom, setSelectedStockroom] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Fetch data from the backend
   useEffect(() => {
@@ -98,10 +99,12 @@ function AssetEntry() {
       })
       .then((data) => {
         console.log("Success:", data);
+        setIsSubmitted(true);
         // Handle success - for example, you might clear the form or display a success message
       })
       .catch((error) => {
         console.error("Error:", error);
+        setIsSubmitted(false);
         // Handle errors - for example, display an error message to the user
       });
   };
@@ -193,6 +196,7 @@ function AssetEntry() {
           <button type="submit">Submit</button>
         </div>
       </form>
+      {isSubmitted && <p>Form submitted successfully!</p>} {/* Display confirmation message */}
     </div>
   );
 }

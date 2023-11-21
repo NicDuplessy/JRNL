@@ -156,7 +156,7 @@ def add_asset():
         condition_id=data["condition_id"],
         ModelID=data["ModelID"],
         status_id=data["status_id"],
-        stockroom_id=data["stockroom_id"]  # Include stockroom_id
+        stockroom_id=data["stockroom_id"] 
     )
     db.session.add(new_asset)
     db.session.commit()
