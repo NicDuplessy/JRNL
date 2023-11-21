@@ -13,7 +13,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-
 class Model(db.Model):
     __tablename__ = "model"
     ModelID = db.Column(db.Integer, primary_key=True)
@@ -23,7 +22,6 @@ class Model(db.Model):
     @property
     def serialize(self):
         return {"ModelID": self.ModelID, "ModelName": self.ModelName}
-
 
 class Condition(db.Model):
     __tablename__ = "condition"
@@ -35,7 +33,6 @@ class Condition(db.Model):
     def serialize(self):
         return {"condition_id": self.condition_id, "name": self.name}
 
-
 class Stockroom(db.Model):
     __tablename__ = "stockroom"
     stockroom_id = db.Column(db.Integer, primary_key=True)
@@ -46,7 +43,6 @@ class Stockroom(db.Model):
     def serialize(self):
         return {"stockroom_id": self.stockroom_id, "name": self.name}
 
-
 class Status(db.Model):
     __tablename__ = "status"
     status_id = db.Column(db.Integer, primary_key=True)
@@ -56,7 +52,6 @@ class Status(db.Model):
     @property
     def serialize(self):
         return {"status_id": self.status_id, "name": self.name}
-
 
 class Asset(db.Model):
     __tablename__ = "asset"
