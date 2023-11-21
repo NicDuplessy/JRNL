@@ -102,6 +102,25 @@ class Employee(db.Model):
             "AssetSerialNumber": self.AssetSerialNumber,
         }
 
+"""    
+class Request(db.Model):
+    __tablename__ = "request"
+    SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
+    condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
+    ModelID = db.Column(db.Integer, db.ForeignKey("model.ModelID"))
+    status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
+    stockroom_id = db.Column(db.Integer, db.ForeignKey("stockroom.stockroom_id"))
+
+    @property
+    def serialize(self):
+        return {
+            "SerialNumber": self.SerialNumber,
+            "condition_id": self.condition_id,
+            "ModelID": self.ModelID,
+            "status_id": self.status_id,
+            "stockroom_id": self.stockroom_id,
+        }
+"""
 
 # Routes
 @app.route("/")
@@ -114,6 +133,14 @@ def get_next_serial_number():
     next_serial = (max_serial or 0) + 1
     return jsonify({"nextSerialNumber": next_serial})
 
+"""
+@app.route("/next-request-number", methods=["GET"])
+def get_next_request_number():
+    max_request = db.session.query(db.func.max(Request.RequestNumber)).scalar()
+    next_request = (max_request or 0) + 1
+    return jsonify({"nextRequestNumber": next_request})
+"""
+    
 # Routes for Model Table
 @app.route("/models", methods=["GET"])
 def get_all_models():
