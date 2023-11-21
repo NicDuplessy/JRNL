@@ -156,10 +156,12 @@ def add_asset():
         condition_id=data["condition_id"],
         ModelID=data["ModelID"],
         status_id=data["status_id"],
+        stockroom_id=data["stockroom_id"]  # Include stockroom_id
     )
     db.session.add(new_asset)
     db.session.commit()
     return jsonify(new_asset.serialize), 201
+
 
 
 @app.route("/asset/<int:serial_number>", methods=["PUT"])

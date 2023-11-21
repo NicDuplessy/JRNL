@@ -78,7 +78,7 @@ function AssetEntry() {
       status_id: selectedStatus, // Ensure this matches the backend expectation
       assignedTo: selectedEmployee,
       stockroom_id: selectedStockroom,
-      // ... any other fields
+ 
     };
 
     // POST request to the Flask backend
@@ -183,10 +183,7 @@ function AssetEntry() {
             onChange={handleInputChange}
           >
             {stockrooms.map((stockroom) => (
-              <option
-                key={stockroom.stockroom_id}
-                value={stockroom.stockroom_id}
-              >
+              <option key={stockroom.stockroom_id} value={stockroom.stockroom_id}>
                 {stockroom.name}
               </option>
             ))}
