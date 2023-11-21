@@ -102,30 +102,35 @@ class Employee(db.Model):
             "AssetSerialNumber": self.AssetSerialNumber,
         }
 
-"""    
+
 class Request(db.Model):
     __tablename__ = "request"
+    RequestNumber = db.Column(db.Integer, primary_key=True)
+    EmployeeNumber = db.Column(db.Integer, db.ForeignKey("employee.EmployeeNumber"))
     SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
-    condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
-    ModelID = db.Column(db.Integer, db.ForeignKey("model.ModelID"))
+    Date = db.Column(db.date)
+    Issue = db.Column(db.varchar(255))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
-    stockroom_id = db.Column(db.Integer, db.ForeignKey("stockroom.stockroom_id"))
+    condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
 
     @property
     def serialize(self):
         return {
+            "RequestNumber": self.RequestNumber,
+            "EmployeeNumber": self.EmployeeNumber,
             "SerialNumber": self.SerialNumber,
-            "condition_id": self.condition_id,
-            "ModelID": self.ModelID,
+            "Date": self.Date,
+            "Issue": self.Issue,
             "status_id": self.status_id,
-            "stockroom_id": self.stockroom_id,
+            "condition_id": self.condition_id,
         }
-"""
+
 
 # Routes
 @app.route("/")
 def index():
     return jsonify({"message": "Welcome to the Flask Backend!"})
+
 
 @app.route("/next-serial-number", methods=["GET"])
 def get_next_serial_number():
@@ -133,14 +138,14 @@ def get_next_serial_number():
     next_serial = (max_serial or 0) + 1
     return jsonify({"nextSerialNumber": next_serial})
 
-"""
+
 @app.route("/next-request-number", methods=["GET"])
 def get_next_request_number():
     max_request = db.session.query(db.func.max(Request.RequestNumber)).scalar()
     next_request = (max_request or 0) + 1
     return jsonify({"nextRequestNumber": next_request})
-"""
-    
+
+
 # Routes for Model Table
 @app.route("/models", methods=["GET"])
 def get_all_models():
@@ -188,12 +193,11 @@ def add_asset():
         condition_id=data["condition_id"],
         ModelID=data["ModelID"],
         status_id=data["status_id"],
-        stockroom_id=data["stockroom_id"] 
+        stockroom_id=data["stockroom_id"],
     )
     db.session.add(new_asset)
     db.session.commit()
     return jsonify(new_asset.serialize), 201
-
 
 
 @app.route("/asset/<int:serial_number>", methods=["PUT"])
@@ -351,6 +355,53 @@ def delete_status(status_id):
     db.session.delete(status)
     db.session.commit()
     return jsonify({"message": "Status deleted"}), 204
+
+
+# Routes for Request table
+@app.route("/requests", methods=["GET"])
+def get_all_requests():
+    requests = Request.query.all()
+    return jsonify([request.serialize for request in requests])
+
+
+@app.route("/request", methods=["POST"])
+def add_request():
+    data = request.json
+    new_request = Request(
+        EmployeeNumber=data["EmployeeNumber"],
+        SerialNumber=data["SerialNumber"],
+        Date=data["Date"],
+        Issue=data["Issue"],
+        status_id=data["status_id"],
+        condition_id=data["condition_id"],
+    )
+    db.session.add(new_request)
+    db.session.commit()
+    return jsonify(new_request.serialize), 201
+
+
+@app.route("/request/<int:request_number>", methods=["PUT"])
+def update_request(request_number):
+    request_record = Request.query.get_or_404(request_number)
+    data = request.json
+    request_record.EmployeeNumber = data.get(
+        "EmployeeNumber", request_record.EmployeeNumber
+    )
+    request_record.SerialNumber = data.get("SerialNumber", request_record.SerialNumber)
+    request_record.Date = data.get("Date", request_record.Date)
+    request_record.Issue = data.get("Issue", request_record.Issue)
+    request_record.status_id = data.get("status_id", request_record.status_id)
+    request_record.condition_id = data.get("condition_id", request_record.condition_id)
+    db.session.commit()
+    return jsonify(request_record.serialize)
+
+
+@app.route("/request/<int:request_number>", methods=["DELETE"])
+def delete_request(request_number):
+    request_record = Request.query.get_or_404(request_number)
+    db.session.delete(request_record)
+    db.session.commit()
+    return jsonify({"message": "Request deleted"}), 204
 
 
 if __name__ == "__main__":
