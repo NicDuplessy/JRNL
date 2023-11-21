@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function AssetRequest() {
-  const [typeDevice, setTypeDevice] = useState("");
-  const [requester, setRequester] = useState("");
+  const [models, setModels] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [serialNum, setSerialNum] = useState([]);
+  const [issue, setIssue] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [nextSerialNumber, setNextSerialNumber] = useState("");
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
-      case "typeDevice":
-        setTypeDevice(value);
+      case "model":
+        setSelectedModel(value);
         break;
-      case "requester":
-        setRequester(value);
+      case "employee":
+        setSelectedEmployee(value);
         break;
       default:
         break;
