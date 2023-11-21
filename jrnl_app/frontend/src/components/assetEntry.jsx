@@ -6,10 +6,12 @@ function AssetEntry() {
   const [conditions, setConditions] = useState([]); // For condition data
   const [statuses, setStatuses] = useState([]); // For status data
   const [employees, setEmployees] = useState([]); // For employee data
+  const [stockrooms, setStockrooms] = useState([]); //For stockroom data
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedStockroom, setSelectedStockroom] = useState("");
 
   // Fetch data from the backend
   useEffect(() => {
@@ -33,6 +35,10 @@ function AssetEntry() {
     fetch("http://127.0.0.1:5000/employees")
       .then((response) => response.json())
       .then((data) => setEmployees(data));
+
+    fetch("http://127.0.0.1:5000/stockrooms")
+      .then((response) => response.json())
+      .then((data) => setStockrooms(data));
   }, []);
 
   const handleInputChange = (event) => {
@@ -53,6 +59,9 @@ function AssetEntry() {
       case "assignedTo":
         setSelectedEmployee(value);
         break;
+      case "stockroom":
+        setSelectedStockroom(value);
+        break;
       default:
         break;
     }
@@ -64,13 +73,14 @@ function AssetEntry() {
     // Construct the asset data object from the state variables
     const assetData = {
       serialNum: serialNum,
-      ModelID: selectedModel,      // Ensure this matches the backend expectation
+      ModelID: selectedModel, // Ensure this matches the backend expectation
       condition_id: selectedCondition, // Ensure this matches the backend expectation
-      status_id: selectedStatus,   // Ensure this matches the backend expectation
+      status_id: selectedStatus, // Ensure this matches the backend expectation
       assignedTo: selectedEmployee,
+      stockroom_id: selectedStockroom,
       // ... any other fields
     };
-    
+
     // POST request to the Flask backend
     fetch("http://127.0.0.1:5000/asset", {
       // Update the endpoint to '/asset'
@@ -161,6 +171,23 @@ function AssetEntry() {
             {employees.map((e) => (
               <option key={e.EmployeeNumber} value={e.EmployeeNumber}>
                 {e.FirstName} {e.LastName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label>Stockroom:</label>
+          <select
+            name="stockroom"
+            value={selectedStockroom}
+            onChange={handleInputChange}
+          >
+            {stockrooms.map((stockroom) => (
+              <option
+                key={stockroom.stockroom_id}
+                value={stockroom.stockroom_id}
+              >
+                {stockroom.name}
               </option>
             ))}
           </select>
