@@ -9,6 +9,8 @@ function AssetRequests() {
   const [isSubmitted, setIsSubmitted] = useState(false); // Submission status
   const [selectedSerialNumber, setSelectedSerialNumber] = useState("");
   const [requestDate, setRequestDate] = useState(""); // State for the date
+  const [conditions, setConditions] = useState(""); // For condition data
+  const [statuses, setStatuses] = useState("");
 
   // Fetch data from the backend
   useEffect(() => {
@@ -17,6 +19,16 @@ function AssetRequests() {
       .then((response) => response.json())
       .then((data) => setRequestNumber(data.nextRequestNumber))
       .catch((error) => console.error("Error fetching request number:", error));
+
+    // Fetch statuses
+    fetch("http://127.0.0.1:5000/statuses")
+      .then((response) => response.json())
+      .then((data) => setStatuses(data));
+
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data));
 
     // Fetch serial numbers
     fetch("http://127.0.0.1:5000/serial-numbers") // Update the URL to the new endpoint
@@ -46,6 +58,12 @@ function AssetRequests() {
       case "requestDate":
         setRequestDate(value);
         break;
+      case "conditions":
+        setConditions(value);
+        break;
+      case statuses:
+        setStatuses(value);
+        break;
       default:
         break;
     }
@@ -59,6 +77,8 @@ function AssetRequests() {
       SerialNumber: selectedSerialNumber,
       Issue: issue,
       Date: requestDate,
+      status_id: statuses,
+      condition_id: conditions,
     };
 
     // POST request to Flask backend
@@ -141,6 +161,14 @@ function AssetRequests() {
             value={requestDate}
             onChange={handleInputChange}
           />
+        </div>
+        <div>
+          <label>Status Number:</label>
+          <input type="text" value={statuses} disabled />
+        </div>
+        <div>
+          <label>Condition Number:</label>
+          <input type="text" value={conditions} disabled />
         </div>
         <div>
           <button type="submit">Submit</button>
