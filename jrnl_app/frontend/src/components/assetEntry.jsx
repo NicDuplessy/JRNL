@@ -13,9 +13,16 @@ function AssetEntry() {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedStockroom, setSelectedStockroom] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [nextSerialNumber, setNextSerialNumber] = useState("");
 
   // Fetch data from the backend
   useEffect(() => {
+    // Next Serial Number Available
+    fetch("http://127.0.0.1:5000/next-serial-number")
+      .then((response) => response.json())
+      .then((data) => setNextSerialNumber(data.nextSerialNumber))
+      .catch((error) => console.error("Error fetching serial number:", error));
+
     // Fetch models
     fetch("http://127.0.0.1:5000/models")
       .then((response) => response.json())
@@ -73,7 +80,7 @@ function AssetEntry() {
 
     // Construct the asset data object from the state variables
     const assetData = {
-      serialNum: serialNum,
+      serialNum: nextSerialNumber,
       ModelID: selectedModel, // Ensure this matches the backend expectation
       condition_id: selectedCondition, // Ensure this matches the backend expectation
       status_id: selectedStatus, // Ensure this matches the backend expectation
@@ -118,8 +125,8 @@ function AssetEntry() {
           <input
             type="text"
             name="serialNum"
-            value={serialNum}
-            onChange={handleInputChange}
+            value={nextSerialNumber}
+            disabled
           />
         </div>
         <div>

@@ -108,6 +108,11 @@ class Employee(db.Model):
 def index():
     return jsonify({"message": "Welcome to the Flask Backend!"})
 
+@app.route("/next-serial-number", methods=["GET"])
+def get_next_serial_number():
+    max_serial = db.session.query(db.func.max(Asset.SerialNumber)).scalar()
+    next_serial = (max_serial or 0) + 1
+    return jsonify({"nextSerialNumber": next_serial})
 
 # Routes for Model Table
 @app.route("/models", methods=["GET"])
