@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import Date
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +15,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+
 class Model(db.Model):
     __tablename__ = "model"
     ModelID = db.Column(db.Integer, primary_key=True)
@@ -22,6 +25,7 @@ class Model(db.Model):
     @property
     def serialize(self):
         return {"ModelID": self.ModelID, "ModelName": self.ModelName}
+
 
 class Condition(db.Model):
     __tablename__ = "condition"
@@ -33,6 +37,7 @@ class Condition(db.Model):
     def serialize(self):
         return {"condition_id": self.condition_id, "name": self.name}
 
+
 class Stockroom(db.Model):
     __tablename__ = "stockroom"
     stockroom_id = db.Column(db.Integer, primary_key=True)
@@ -43,6 +48,7 @@ class Stockroom(db.Model):
     def serialize(self):
         return {"stockroom_id": self.stockroom_id, "name": self.name}
 
+
 class Status(db.Model):
     __tablename__ = "status"
     status_id = db.Column(db.Integer, primary_key=True)
@@ -52,6 +58,7 @@ class Status(db.Model):
     @property
     def serialize(self):
         return {"status_id": self.status_id, "name": self.name}
+
 
 class Asset(db.Model):
     __tablename__ = "asset"
@@ -103,8 +110,8 @@ class Request(db.Model):
     RequestNumber = db.Column(db.Integer, primary_key=True)
     EmployeeNumber = db.Column(db.Integer, db.ForeignKey("employee.EmployeeNumber"))
     SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
-    Date = db.Column(db.date)
-    Issue = db.Column(db.varchar(255))
+    Date = db.Column(Date)
+    Issue = db.Column(db.String(255))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
     condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
 
@@ -362,10 +369,12 @@ def get_all_requests():
 @app.route("/request", methods=["POST"])
 def add_request():
     data = request.json
+    date_obj = datetime.strptime(data["Date"], "%Y-%m-%d").date()
+
     new_request = Request(
         EmployeeNumber=data["EmployeeNumber"],
         SerialNumber=data["SerialNumber"],
-        Date=data["Date"],
+        Date=date_obj,
         Issue=data["Issue"],
         status_id=data["status_id"],
         condition_id=data["condition_id"],
@@ -379,6 +388,10 @@ def add_request():
 def update_request(request_number):
     request_record = Request.query.get_or_404(request_number)
     data = request.json
+
+    if "Date" in data:
+        request_record.Date = datetime.strptime(data["Date"], "%Y-%m-%d").date()
+
     request_record.EmployeeNumber = data.get(
         "EmployeeNumber", request_record.EmployeeNumber
     )
