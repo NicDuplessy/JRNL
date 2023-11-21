@@ -11,7 +11,6 @@ function AssetEntry() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState("");
 
-
   // Fetch data from the backend
   useEffect(() => {
     // Fetch models
@@ -58,19 +57,20 @@ function AssetEntry() {
         break;
     }
   };
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
     // Construct the asset data object from the state variables
     const assetData = {
       serialNum: serialNum,
-      model: models, // The state variable for the selected model
-      condition: conditions, // The state variable for the selected condition
-      status: statuses, // The state variable for the selected status
-      assignedTo: employees, // The state variable for the selected employee;
+      ModelID: selectedModel,      // Ensure this matches the backend expectation
+      condition_id: selectedCondition, // Ensure this matches the backend expectation
+      status_id: selectedStatus,   // Ensure this matches the backend expectation
+      assignedTo: selectedEmployee,
+      // ... any other fields
     };
-
+    
     // POST request to the Flask backend
     fetch("http://127.0.0.1:5000/asset", {
       // Update the endpoint to '/asset'
@@ -111,17 +111,25 @@ function AssetEntry() {
         </div>
         <div>
           <label>Model:</label>
-          <select name="model" value={selectedModel} onChange={handleInputChange}>
-           {models.map((m) => (
+          <select
+            name="model"
+            value={selectedModel}
+            onChange={handleInputChange}
+          >
+            {models.map((m) => (
               <option key={m.ModelID} value={m.ModelID}>
                 {m.ModelName}
               </option>
-           ))}
+            ))}
           </select>
         </div>
         <div>
           <label>Condition:</label>
-          <select name="condition" value={selectedCondition} onChange={handleInputChange}>
+          <select
+            name="condition"
+            value={selectedCondition}
+            onChange={handleInputChange}
+          >
             {conditions.map((c) => (
               <option key={c.condition_id} value={c.condition_id}>
                 {c.name}
@@ -131,7 +139,11 @@ function AssetEntry() {
         </div>
         <div>
           <label>Status:</label>
-          <select name="status" value={selectedStatus} onChange={handleInputChange}>
+          <select
+            name="status"
+            value={selectedStatus}
+            onChange={handleInputChange}
+          >
             {statuses.map((s) => (
               <option key={s.status_id} value={s.status_id}>
                 {s.name}
@@ -141,7 +153,11 @@ function AssetEntry() {
         </div>
         <div>
           <label>Assigned To (Employee):</label>
-          <select name="assignedTo" value={selectedEmployee} onChange={handleInputChange}>
+          <select
+            name="assignedTo"
+            value={selectedEmployee}
+            onChange={handleInputChange}
+          >
             {employees.map((e) => (
               <option key={e.EmployeeNumber} value={e.EmployeeNumber}>
                 {e.FirstName} {e.LastName}
