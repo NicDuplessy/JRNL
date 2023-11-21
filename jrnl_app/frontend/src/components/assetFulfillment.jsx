@@ -2,89 +2,75 @@ import React, { useState, useEffect } from "react";
 
 function AssetFulfillment() {
   // State variables to manage ticket information and asset status
-  const [ticket, setTicket] = useState(null);
-  const [assetsAvailable, setAssetsAvailable] = useState([]);
-  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [models, setModels] = useState([]); //for model data
+  const [employees, setEmployees] = useState([]); //for employee data
+  const [requests, setRequests] = useState([]); //for request data
+  const [statuses, setStatuses] = useState([]); //for status data
+  const [conditions, setConditions] = useState([]); // For condition data
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedCondition, setSelectedCondition] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // useEffect to simulate fetching ticket and asset data
+  // useEffect to fetch models and employee information
   useEffect(() => {
-    // Simulate fetching ticket data
-    // Replace with actual API call to retrieve ticket details
-    const fetchTicketData = async () => {
-      // Example ticket data
-      const ticketData = {
-        id: 1,
-        assetRequest: "Request details from user",
-        status: "Assigned",
-        // ... other ticket information ...
-      };
-      setTicket(ticketData);
-    };
+    //fetch models
+    fetch("http://127.0.0.1:500/models")
+      .then((response) => response.json())
+      .then((data) => setModels(data))
+      .catch((error) => console.error("Error retrieving models", error));
 
-    // Simulate fetching available assets from the stockroom
-    // Replace with actual API call to retrieve asset data
-    const fetchAvailableAssets = async () => {
-      // Example asset data
-      const availableAssets = [
-        { id: 1, name: "Asset 1", status: "Available" },
-        { id: 2, name: "Asset 2", status: "Available" },
-        // ... other available assets ...
-      ];
-      setAssetsAvailable(availableAssets);
-    };
+    //fetch employees
+    fetch("http://127.0.0.1:5000/employees")
+      .then((response) => response.json())
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error("Error retrieving employees", error));
 
-    fetchTicketData();
-    fetchAvailableAssets();
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data));
+
+    // Fetch statuses
+    fetch("http://127.0.0.1:5000/statuses")
+      .then((response) => response.json())
+      .then((data) => setStatuses(data));
   }, []);
 
-  // Function to update asset status and close the ticket
-  const fulfillAssetRequest = () => {
-    // Simulate updating asset status and closing the ticket
-    // Replace with actual API calls to update asset and ticket data
-    console.log("Asset request fulfilled:", selectedAsset);
-    console.log("Ticket closed:", ticket);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    switch (name) {
+      case "model":
+        setSelectedModel(value);
+        break;
+      case "assignedTo":
+        setSelectedEmployee(value);
+        break;
+      default:
+        break;
+    }
+  };
 
-    // Clear selected asset
-    setSelectedAsset(null);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    //Construct requestData  object from the state variables
+    const requestData = {
+      ModelID: selectedModel,
+      assignedTo: selectedEmployee,
+    };
+
+    //POST request to Flask backend
   };
 
   return (
     <div>
       <h2>Asset Fulfillment</h2>
-      {ticket && (
-        <div>
-          <h3>Ticket Details</h3>
-          <p>Request: {ticket.assetRequest}</p>
-          <p>Status: {ticket.status}</p>
-          {/* ... other ticket information ... */}
-        </div>
-      )}
-      {assetsAvailable.length > 0 && (
-        <div>
-          <h3>Available Assets</h3>
-          <ul>
-            {assetsAvailable.map((asset) => (
-              <li key={asset.id}>
-                <label>
-                  <input
-                    type="radio"
-                    name="selectedAsset"
-                    value={asset.id}
-                    checked={selectedAsset === asset.id}
-                    onChange={() => setSelectedAsset(asset.id)}
-                  />
-                  {asset.name} (Status: {asset.status})
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {selectedAsset && (
-        <div>
-          <button onClick={fulfillAssetRequest}>Fulfill Asset Request</button>
-        </div>
-      )}
+      <div>
+        <button>Fulfill Asset Request</button>
+      </div>
     </div>
   );
 }

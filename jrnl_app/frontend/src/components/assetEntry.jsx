@@ -86,7 +86,6 @@ function AssetEntry() {
       status_id: selectedStatus, // Ensure this matches the backend expectation
       assignedTo: selectedEmployee,
       stockroom_id: selectedStockroom,
- 
     };
 
     // POST request to the Flask backend
@@ -119,7 +118,7 @@ function AssetEntry() {
   return (
     <div className="asset-entry-form">
       <h2>Asset Entry Form</h2>
-        <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>Serial Number:</label>
           <input
@@ -193,7 +192,10 @@ function AssetEntry() {
             onChange={handleInputChange}
           >
             {stockrooms.map((stockroom) => (
-              <option key={stockroom.stockroom_id} value={stockroom.stockroom_id}>
+              <option
+                key={stockroom.stockroom_id}
+                value={stockroom.stockroom_id}
+              >
                 {stockroom.name}
               </option>
             ))}
@@ -203,7 +205,8 @@ function AssetEntry() {
           <button type="submit">Submit</button>
         </div>
       </form>
-      {isSubmitted && <p>Form submitted successfully!</p>} {/* Display confirmation message */}
+      {isSubmitted && <p>Form submitted successfully!</p>}{" "}
+      {/* Display confirmation message */}
     </div>
   );
 }
