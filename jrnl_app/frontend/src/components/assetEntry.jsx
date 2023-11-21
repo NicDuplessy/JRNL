@@ -117,9 +117,9 @@ function AssetEntry() {
   };
 
   return (
-    <div>
+    <div className="asset-entry-form">
       <h2>Asset Entry Form</h2>
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
         <div>
           <label>Serial Number:</label>
           <input

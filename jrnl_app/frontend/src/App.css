@@ -362,3 +362,57 @@ h2, p {
   background-color: #f0dfc8; /* Light beige */
 }
 
+/* Styles for Asset Entry Form */
+.asset-entry-form {
+  background-color: #f0dfc8; /* Light background for the form */
+  padding: 20px;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  margin: auto; /* Center the form in the available space */
+  max-width: 600px; /* Maximum width of the form */
+}
+
+.asset-entry-form h2 {
+  text-align: center;
+  color: #303030; /* Dark text for the title */
+}
+
+.asset-entry-form div {
+  margin-bottom: 15px; /* Space between form fields */
+}
+
+.asset-entry-form label {
+  display: block; /* Ensure the label takes up its own line */
+  margin-bottom: 5px; /* Space between label and input */
+}
+
+.asset-entry-form input,
+.asset-entry-form select {
+  width: 100%; /* Full width of the container */
+  padding: 10px; /* Padding inside the inputs */
+  border: 1px solid #ccc; /* Border to match the theme */
+  border-radius: 4px; /* Rounded corners */
+}
+
+/* Styling for the disabled input */
+.asset-entry-form input[disabled] {
+  background-color: #eaeaea; /* Lighter background for disabled input */
+  color: #888; /* Dim text for disabled input */
+}
+
+/* Styling for the submit button */
+.asset-entry-form button {
+  width: 100%; /* Full width of the container */
+  padding: 10px; /* Padding inside the button */
+  background-color: #51abb2; /* Color to match the entry tile */
+  color: white;
+  border: none;
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-weight: bold;
+  text-transform: uppercase; /* Uppercase text for the button */
+}
+
+.asset-entry-form button:hover {
+  background-color: #429192; /* Slightly darker color on hover */
+}
