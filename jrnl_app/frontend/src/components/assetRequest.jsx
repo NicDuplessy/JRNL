@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 
 function AssetRequests() {
   const [requestNumber, setRequestNumber] = useState(""); // For the next request number
-  const [serialNumbers, setSerialNumbers] = useState(""); // For serial numbers from the asset table
+  const [serialNumbers, setSerialNumbers] = useState([]); // For serial numbers from the asset table
   const [employees, setEmployees] = useState([]); // For employee data
   const [selectedEmployee, setSelectedEmployee] = useState(""); // Selected employee
   const [issue, setIssue] = useState(""); // Issue description
   const [isSubmitted, setIsSubmitted] = useState(false); // Submission status
-  const [nextSerialNumber, setNextSerialNumber] = useState("");
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState("");
+  const [requestDate, setRequestDate] = useState(""); // State for the date
 
   // Fetch data from the backend
   useEffect(() => {
@@ -18,9 +19,9 @@ function AssetRequests() {
       .catch((error) => console.error("Error fetching request number:", error));
 
     // Fetch serial numbers
-    fetch("http://127.0.0.1:5000/next-serial-number")
+    fetch("http://127.0.0.1:5000/serial-numbers") // Update the URL to the new endpoint
       .then((response) => response.json())
-      .then((data) => setNextSerialNumber(data))
+      .then((data) => setSerialNumbers(data))
       .catch((error) => console.error("Error fetching serial numbers:", error));
 
     // Fetch employees (similar to assetEntry)
@@ -34,13 +35,16 @@ function AssetRequests() {
     const { name, value } = event.target;
     switch (name) {
       case "serialNumber":
-        setSerialNumbers(value);
+        setSelectedSerialNumber(value);
         break;
       case "assignedTo":
         setSelectedEmployee(value);
         break;
       case "issue":
         setIssue(value);
+        break;
+      case "requestDate":
+        setRequestDate(value);
         break;
       default:
         break;
@@ -52,8 +56,9 @@ function AssetRequests() {
     const requestData = {
       RequestNumber: requestNumber,
       EmployeeNumber: selectedEmployee,
-      SerialNumber: nextSerialNumber,
+      SerialNumber: selectedSerialNumber,
       Issue: issue,
+      Date: requestDate,
     };
 
     // POST request to Flask backend
@@ -94,9 +99,15 @@ function AssetRequests() {
           <label>Serial Number:</label>
           <select
             name="serialNumber"
-            value={nextSerialNumber}
-            disabled
-          ></select>
+            value={selectedSerialNumber}
+            onChange={handleInputChange}
+          >
+            {serialNumbers.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Assigned To (Employee):</label>
@@ -119,6 +130,15 @@ function AssetRequests() {
             name="issue"
             maxLength="255"
             value={issue}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label>Date:</label>
+          <input
+            type="date"
+            name="requestDate"
+            value={requestDate}
             onChange={handleInputChange}
           />
         </div>

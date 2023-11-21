@@ -412,5 +412,13 @@ def delete_request(request_number):
     return jsonify({"message": "Request deleted"}), 204
 
 
+@app.route("/serial-numbers", methods=["GET"])
+def get_serial_numbers():
+    serial_numbers = Asset.query.with_entities(Asset.SerialNumber).all()
+    # Extracting serial numbers from the tuples
+    serial_list = [num[0] for num in serial_numbers]
+    return jsonify(serial_list)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
