@@ -384,6 +384,30 @@ def add_request():
     return jsonify(new_request.serialize), 201
 
 
+@app.route("/request-tickets", methods=["GET"])
+def get_request_tickets():
+    # Query the database for request tickets with status_id = 1 and sorted by date
+    request_tickets = Request.query.filter_by(status_id=1).order_by(Request.Date).all()
+    
+    # Serialize the request tickets and return them as JSON
+    return jsonify([request.serialize for request in request_tickets])
+
+
+@app.route("/update-request-ticket/<int:request_number>", methods=["PUT"])
+def update_request_ticket(request_number):
+    request_ticket = Request.query.get_or_404(request_number)
+    data = request.json
+
+    if "status_id" in data:
+        request_ticket.status_id = data["status_id"]
+
+    if "condition_id" in data:
+        request_ticket.condition_id = data["condition_id"]
+
+    db.session.commit()
+    return jsonify(request_ticket.serialize)
+
+
 @app.route("/request/<int:request_number>", methods=["PUT"])
 def update_request(request_number):
     request_record = Request.query.get_or_404(request_number)
