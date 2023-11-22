@@ -90,7 +90,7 @@ class Employee(db.Model):
     accesslevel_id = db.Column(
         db.Integer
     )  # Assuming this is already defined in your model
-    AssetSerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
+    SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
     asset = db.relationship("Asset", backref="employees", lazy=True)
 
     @property
@@ -102,7 +102,7 @@ class Employee(db.Model):
             "Phone": self.Phone,
             "Email": self.Email,
             "accesslevel_id": self.accesslevel_id,
-            "AssetSerialNumber": self.AssetSerialNumber,
+            "SerialNumber": self.SerialNumber,
         }
 
 
@@ -236,7 +236,7 @@ def add_employee():
         Phone=data["Phone"],
         Email=data["Email"],
         accesslevel_id=data["accesslevel_id"],
-        AssetSerialNumber=data["AssetSerialNumber"],
+        SerialNumber=data["SerialNumber"],
     )
     db.session.add(new_employee)
     db.session.commit()
@@ -451,7 +451,7 @@ def get_employee_status(employee_number):
     status = (
         db.session.query(Status.name)
         .join(Asset, Status.status_id == Asset.status_id)
-        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .join(Employee, Employee.SerialNumber == Asset.SerialNumber)
         .filter(Employee.EmployeeNumber == employee_number)
         .first()
     )
@@ -464,7 +464,7 @@ def get_employee_condition(employee_number):
     condition = (
         db.session.query(Condition.name)
         .join(Asset, Condition.condition_id == Asset.condition_id)
-        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .join(Employee, Employee.SerialNumber == Asset.SerialNumber)
         .filter(Employee.EmployeeNumber == employee_number)
         .first()
     )
@@ -475,7 +475,7 @@ def get_employee_condition(employee_number):
 def get_employee_asset(employee_number):
     employee_asset = (
         db.session.query(Asset.SerialNumber)
-        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .join(Employee, Employee.SerialNumber == Asset.SerialNumber)
         .filter(Employee.EmployeeNumber == employee_number)
         .first()
     )
@@ -487,12 +487,16 @@ def get_employee_asset(employee_number):
 
 # Routes for Tracking
 
+
 @app.route("/employee-names", methods=["GET"])
 def get_employee_names():
-    employees = Employee.query.with_entities(Employee.FirstName, Employee.LastName).all()
+    employees = Employee.query.with_entities(
+        Employee.FirstName, Employee.LastName
+    ).all()
     # Combining first and last names
     employee_names = [f"{emp[0]} {emp[1]}" for emp in employees]
     return jsonify(employee_names)
+
 
 @app.route("/serial-numbers", methods=["GET"])
 def get_serial_numbers_list():
@@ -501,7 +505,6 @@ def get_serial_numbers_list():
     serial_list = [num[0] for num in serial_numbers]
     return jsonify(serial_list)
 
-from flask import request, jsonify
 
 @app.route("/api/search-asset", methods=["POST"])
 def search_asset():
@@ -519,12 +522,13 @@ def search_asset():
         employee_name = data["employeeName"]
         # Assuming employee name is in "FirstName LastName" format
         first_name, last_name = employee_name.split(" ", 1)
-        employee = Employee.query.filter_by(FirstName=first_name, LastName=last_name).first()
+        employee = Employee.query.filter_by(
+            FirstName=first_name, LastName=last_name
+        ).first()
         if employee and employee.asset:
             return jsonify(employee.asset.serialize)
 
     return jsonify({"message": "Asset not found"}), 404
-
 
 
 if __name__ == "__main__":

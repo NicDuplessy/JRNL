@@ -9,8 +9,8 @@ function AssetRequests() {
   const [isSubmitted, setIsSubmitted] = useState(false); // Submission status
   const [selectedSerialNumber, setSelectedSerialNumber] = useState("");
   const [requestDate, setRequestDate] = useState(""); // State for the date
-  const [conditions, setConditions] = useState(""); // For condition data
-  const [statuses, setStatuses] = useState("");
+  const [conditions, setConditions] = useState([]); // For condition data
+  const [statuses, setStatuses] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
 
@@ -165,29 +165,11 @@ function AssetRequests() {
         </div>
         <div>
           <label>Status Number:</label>
-          <select
-            name="status"
-            value={selectedStatus}
-            onChange={handleInputChange} // Use handleInputChange to update state
-          >
-            {statuses.map((status) => (
-              <option key={status.id} value={status.id}>
-                {status.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="condition"
-            value={selectedCondition}
-            onChange={handleInputChange} // Use handleInputChange to update state
-          >
-            {conditions.map((condition) => (
-              <option key={condition.id} value={condition.id}>
-                {condition.name}
-              </option>
-            ))}
-          </select>
+          <input type="text" value={statuses} />
+        </div>
+        <div>
+          <label>Condition Number:</label>
+          <input type="text" value={conditions} />
         </div>
         <div>
           <button type="submit">Submit</button>
