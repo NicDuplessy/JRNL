@@ -376,8 +376,8 @@ def add_request():
         SerialNumber=data["SerialNumber"],
         Date=date_obj,
         Issue=data["Issue"],
-        status_id=int(data["status_id"]),  # Convert to int
-        condition_id=int(data["condition_id"]),  # Convert to int
+        status_id=data["status_id"],
+        condition_id=data["condition_id"],
     )
     db.session.add(new_request)
     db.session.commit()
