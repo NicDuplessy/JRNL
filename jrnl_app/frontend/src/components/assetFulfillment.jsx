@@ -80,7 +80,7 @@ function AssetFulfillment() {
   };
 
   return (
-    <div className="asset-fulfillment">
+    <div className="asset-entry-form">
       <h2>Asset Fulfillment</h2>
       <form onSubmit={handleSubmit}>
         <div>
