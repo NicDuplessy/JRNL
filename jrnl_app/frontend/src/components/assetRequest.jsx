@@ -33,16 +33,17 @@ function AssetRequests() {
       .then((data) => setEmployees(data))
       .catch((error) => console.error("Error fetching employees:", error));
 
-    if (selectedEmployee) {
-      fetch(`http://127.0.0.1:5000/employee-status/${selectedEmployee}`)
-        .then((response) => response.json())
-        .then((data) => setStatuses(data.status)); // Assuming the response has a `status` property
+    fetch("http://127.0.0.1:5000/statuses")
+      .then((response) => response.json())
+      .then((data) => setStatuses(data))
+      .catch((error) => console.error("Error fetching statuses:", error));
 
-      fetch(`http://127.0.0.1:5000/employee-condition/${selectedEmployee}`)
-        .then((response) => response.json())
-        .then((data) => setConditions(data.condition)); // Assuming the response has a `condition` property
-    }
-  }, [selectedEmployee]);
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data))
+      .catch((error) => console.error("Error fetching conditions:", error));
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -164,12 +165,33 @@ function AssetRequests() {
           />
         </div>
         <div>
-          <label>Status Number:</label>
-          <input type="text" value={statuses} />
+          <label>Status:</label>
+          <select
+            name="status"
+            value={selectedStatus}
+            onChange={handleInputChange}
+          >
+            {statuses.map((status) => (
+              <option key={status.id} value={status.id}>
+                {status.name}
+              </option>
+            ))}
+          </select>
         </div>
+
         <div>
-          <label>Condition Number:</label>
-          <input type="text" value={conditions} />
+          <label>Condition:</label>
+          <select
+            name="condition"
+            value={selectedCondition}
+            onChange={handleInputChange}
+          >
+            {conditions.map((condition) => (
+              <option key={condition.id} value={condition.id}>
+                {condition.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <button type="submit">Submit</button>

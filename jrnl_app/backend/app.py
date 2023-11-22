@@ -28,7 +28,7 @@ class Model(db.Model):
         return {"ModelID": self.ModelID, "ModelName": self.ModelName}
 
 
-class Condition(db.Model):
+class Conditions(db.Model):
     __tablename__ = "conditions"
     condition_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
@@ -111,7 +111,7 @@ class Request(db.Model):
     RequestNumber = db.Column(db.Integer, primary_key=True)
     EmployeeNumber = db.Column(db.Integer, db.ForeignKey("employee.EmployeeNumber"))
     SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
-    Date = db.Column(db.String(255))
+    Date = db.Column(Date)
     Issue = db.Column(db.String(255))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
     condition_id = db.Column(db.Integer, db.ForeignKey("conditions.condition_id"))
@@ -370,11 +370,22 @@ def get_all_requests():
 @app.route("/request", methods=["POST"])
 def add_request():
     data = request.json
+    date_obj = datetime.strptime(data["Date"], "%Y-%m-%d").date()
+
+    Validate status_id and condition_id
+    status_id = data.get("status_id")
+    condition_id = data.get("condition_id")
+
+    if not status_id or not Status.query.get(status_id):
+        return jsonify({"error": "Invalid status_id"}), 400
+
+    if not condition_id or not Condition.query.get(condition_id):
+        return jsonify({"error": "Invalid condition_id"}), 400
 
     new_request = Request(
         EmployeeNumber=data["EmployeeNumber"],
         SerialNumber=data["SerialNumber"],
-        Date=data["Date"],
+        Date=date_obj,
         Issue=data["Issue"],
         status_id=data["status_id"],
         condition_id=data["condition_id"],
