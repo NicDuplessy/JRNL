@@ -469,32 +469,48 @@ def get_employee_condition(employee_number):
     )
     return jsonify({"condition": condition.name if condition else None})
 
-# Routes for Tracking 
-@app.route('/api/asset-tracking', methods=['GET'])
-def asset_tracking():
-    search_type = request.args.get('searchType')
-    search_value = request.args.get('searchValue')
 
-    if search_type == 'serialNumber':
+@app.route("/employee/<int:employee_number>/asset", methods=["GET"])
+def get_employee_asset(employee_number):
+    employee_asset = (
+        db.session.query(Asset.SerialNumber)
+        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .filter(Employee.EmployeeNumber == employee_number)
+        .first()
+    )
+    if employee_asset:
+        return jsonify({"SerialNumber": employee_asset.SerialNumber})
+    else:
+        return jsonify({"error": "No asset found for the given employee"}), 404
+
+
+# Routes for Tracking
+@app.route("/api/asset-tracking", methods=["GET"])
+def asset_tracking():
+    search_type = request.args.get("searchType")
+    search_value = request.args.get("searchValue")
+
+    if search_type == "serialNumber":
         asset = Asset.query.filter_by(SerialNumber=search_value).first()
-    elif search_type == 'employeeName':
+    elif search_type == "employeeName":
         # Assuming you have a way to map employee names to assets
         asset = Asset.query.filter_by(EmployeeName=search_value).first()
     else:
-        return jsonify({'error': 'Invalid search type'}), 400
+        return jsonify({"error": "Invalid search type"}), 400
 
     if asset:
         asset_details = {
-            'serialNumber': asset.SerialNumber,
-            'model': asset.Model.ModelName,
-            'employeeName': asset.Employee.FirstName + ' ' + asset.Employee.LastName,
-            'status': asset.Status.name,
-            'condition': asset.Condition.name,
-            'stockroom': asset.Stockroom.name
+            "serialNumber": asset.SerialNumber,
+            "model": asset.Model.ModelName,
+            "employeeName": asset.Employee.FirstName + " " + asset.Employee.LastName,
+            "status": asset.Status.name,
+            "condition": asset.Condition.name,
+            "stockroom": asset.Stockroom.name,
         }
         return jsonify(asset_details)
     else:
-        return jsonify({'error': 'Asset not found'}), 404
+        return jsonify({"error": "Asset not found"}), 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

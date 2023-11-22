@@ -50,15 +50,47 @@ function AssetRequests() {
       fetch(`http://127.0.0.1:5000/employee-condition/${selectedEmployee}`)
         .then((response) => response.json())
         .then((data) => setConditions(data.condition)); // Assuming the response has a `condition` property
+      fetch(`http://127.0.0.1:5000/employee/${selectedEmployee}/asset`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.SerialNumber) {
+            setSelectedSerialNumber(data.SerialNumber);
+          } else {
+            // Handle the case where the employee has no asset
+            setSelectedSerialNumber("");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching employee asset:", error);
+          setSelectedSerialNumber(""); // Reset or handle error
+        });
+
+      const fetchEmployeeAssetDetails = async () => {
+        if (selectedEmployee) {
+          try {
+            // Fetch asset details for the selected employee
+            const response = await fetch(
+              `http://127.0.0.1:5000/employee/${selectedEmployee}/asset`
+            );
+            const assetData = await response.json();
+            if (assetData.SerialNumber) {
+              setSelectedSerialNumber(assetData.SerialNumber); // Set the serial number
+            } else {
+              setSelectedSerialNumber(""); // No asset found for the selected employee
+            }
+          } catch (error) {
+            console.error("Error fetching employee asset details:", error);
+          }
+        }
+      };
+
+      fetchEmployeeAssetDetails();
     }
   }, [selectedEmployee]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
-      case "serialNumber":
-        setSelectedSerialNumber(value);
-        break;
       case "assignedTo":
         setSelectedEmployee(value);
         break;
@@ -121,17 +153,7 @@ function AssetRequests() {
         </div>
         <div>
           <label>Serial Number:</label>
-          <select
-            name="serialNumber"
-            value={selectedSerialNumber}
-            onChange={handleInputChange}
-          >
-            {serialNumbers.map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
-            ))}
-          </select>
+          <input type="text" value={selectedSerialNumber} disabled />
         </div>
         <div>
           <label>Assigned To (Employee):</label>
@@ -166,11 +188,11 @@ function AssetRequests() {
             onChange={handleInputChange}
           />
         </div>
-        <div style={{ display: "none" }}>
+        <div>
           <label>Status Number:</label>
           <input type="text" value={statuses} />
         </div>
-        <div style={{ display: "none" }}>
+        <div>
           <label>Condition Number:</label>
           <input type="text" value={conditions} />
         </div>
