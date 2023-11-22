@@ -112,7 +112,7 @@ function AssetRequests() {
   };
 
   return (
-    <div className="asset-request-form">
+    <div className="asset-entry-form">
       <h2>Asset Request Form</h2>
       <form onSubmit={handleSubmit}>
         <div>
