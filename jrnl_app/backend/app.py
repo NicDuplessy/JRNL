@@ -372,7 +372,7 @@ def add_request():
     data = request.json
     date_obj = datetime.strptime(data["Date"], "%Y-%m-%d").date()
 
-    Validate status_id and condition_id
+    # Validate status_id and condition_id
     status_id = data.get("status_id")
     condition_id = data.get("condition_id")
 
