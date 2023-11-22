@@ -39,26 +39,14 @@ function AssetRequests() {
       fetch(`http://127.0.0.1:5000/employee-condition/${selectedEmployee}`)
         .then((response) => response.json())
         .then((data) => setConditions(data.condition)); // Assuming the response has a `condition` property
-      fetch(`http://127.0.0.1:5000/employee/${selectedEmployee}/asset`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.SerialNumber) {
-            setSelectedSerialNumber(data.SerialNumber);
-          } else {
-            // Handle the case where the employee has no asset
-            setSelectedSerialNumber("");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching employee asset:", error);
-          setSelectedSerialNumber(""); // Reset or handle error
-        });
     }
   }, [selectedEmployee]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     switch (name) {
+      case "serialNumber":
+        setSelectedSerialNumber(value);
       case "assignedTo":
         setSelectedEmployee(value);
         break;
@@ -121,7 +109,17 @@ function AssetRequests() {
         </div>
         <div>
           <label>Serial Number:</label>
-          <input type="text" value={selectedSerialNumber} disabled />
+          <select
+            name="serialNumber"
+            value={selectedSerialNumber}
+            onChange={handleInputChange}
+          >
+            {serialNumbers.map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Assigned To (Employee):</label>
