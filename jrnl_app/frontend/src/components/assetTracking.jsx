@@ -1,67 +1,84 @@
-import React, { useState } from 'react';
-import axios from 'axios'; // You can use Axios for making API requests
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function AssetTracking() {
-  const [searchType, setSearchType] = useState('serialNumber'); // Default to searching by serial number
-  const [searchValue, setSearchValue] = useState('');
-  const [assetDetails, setAssetDetails] = useState(null);
+  // Define state variables
+  const [serialNumber, setSerialNumber] = useState('');
+  const [employeeName, setEmployeeName] = useState('');
+  const [assetInfo, setAssetInfo] = useState(null);
 
-  const handleSearchTypeChange = (e) => {
-    setSearchType(e.target.value);
-  };
-
-  const handleSearchValueChange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Make an API request to fetch asset details based on the selected search type and value
+  // Function to handle the search and fetch asset information
+  const searchAsset = async () => {
     try {
-      const response = await axios.get(`/api/asset-tracking?searchType=${searchType}&searchValue=${searchValue}`);
-      setAssetDetails(response.data);
+      // Define the search criteria based on user input
+      let searchCriteria = {};
+
+      if (serialNumber) {
+        searchCriteria.serialNumber = serialNumber;
+      } else if (employeeName) {
+        searchCriteria.employeeName = employeeName;
+      } else {
+        // Handle case where neither serial number nor employee name is provided
+        return;
+      }
+
+      // Send a request to the backend to fetch asset information
+      const response = await axios.post('/api/search-asset', searchCriteria);
+
+      // Update the assetInfo state with the fetched data
+      setAssetInfo(response.data);
     } catch (error) {
-      console.error('Error fetching asset details:', error);
-      // Handle errors as needed
+      // Handle errors, e.g., display an error message to the user
+      console.error('Error fetching asset information:', error);
     }
   };
 
+  // Render the component
   return (
-    <div className="asset-entry-form">
-      <h2>Asset Tracking</h2>
-      <form onSubmit={handleSubmit}>
+    <div>
+      <h1>Asset Tracking</h1>
+      <div>
+        <label>Search by Serial Number:</label>
+        <select
+          onChange={(e) => setSerialNumber(e.target.value)}
+          value={serialNumber}
+        >
+          <option value="">Select Serial Number</option>
+          {/* Populate the dropdown with serial numbers from the database */}
+          {serialNumbers.map((serial) => (
+            <option key={serial} value={serial}>
+              {serial}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label>Search by Employee Name:</label>
+        <select
+          onChange={(e) => setEmployeeName(e.target.value)}
+          value={employeeName}
+        >
+          <option value="">Select Employee Name</option>
+          {/* Populate the dropdown with employee names from the database */}
+          {employeeNames.map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button onClick={searchAsset}>Submit</button>
+
+      {/* Display asset information if available */}
+      {assetInfo && (
         <div>
-          <label>
-            Search By:
-            <select value={searchType} onChange={handleSearchTypeChange}>
-              <option value="serialNumber">Serial Number</option>
-              <option value="employeeName">Employee Name</option>
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Search Value:
-            <input
-              type="text"
-              value={searchValue}
-              onChange={handleSearchValueChange}
-            />
-          </label>
-        </div>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-      {assetDetails && (
-        <div>
-          <h3>Asset Details</h3>
-          <p>Serial Number: {assetDetails.serialNumber}</p>
-          <p>Model: {assetDetails.model}</p>
-          <p>Employee Name: {assetDetails.employeeName}</p>
-          <p>Status: {assetDetails.status}</p>
-          <p>Condition: {assetDetails.condition}</p>
-          <p>Stockroom: {assetDetails.stockroom}</p>
+          <h2>Asset Information</h2>
+          <p>Serial Number: {assetInfo.serialNumber}</p>
+          <p>Model: {assetInfo.model}</p>
+          <p>Employee Name: {assetInfo.employeeName}</p>
+          <p>Status: {assetInfo.status}</p>
+          <p>Condition: {assetInfo.condition}</p>
+          <p>Stockroom: {assetInfo.stockroom}</p>
         </div>
       )}
     </div>

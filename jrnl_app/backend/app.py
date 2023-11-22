@@ -485,31 +485,34 @@ def get_employee_asset(employee_number):
 
 
 # Routes for Tracking
-@app.route("/api/asset-tracking", methods=["GET"])
-def asset_tracking():
-    search_type = request.args.get("searchType")
-    search_value = request.args.get("searchValue")
+@app.route("/api/search-asset", methods=["POST"])
+def search_asset():
+    data = request.json
 
-    if search_type == "serialNumber":
-        asset = Asset.query.filter_by(SerialNumber=search_value).first()
-    elif search_type == "employeeName":
-        # Assuming you have a way to map employee names to assets
-        asset = Asset.query.filter_by(EmployeeName=search_value).first()
+    if "serialNumber" in data:
+        # Search by serial number
+        serial_number = data["serialNumber"]
+        asset = Asset.query.filter_by(SerialNumber=serial_number).first()
+    elif "employeeName" in data:
+        # Search by employee name
+        employee_name = data["employeeName"]
+        asset = Asset.query.join(Employee).filter(Employee.FirstName == employee_name).first()
     else:
-        return jsonify({"error": "Invalid search type"}), 400
+        return jsonify({"message": "Invalid search criteria"}), 400
 
     if asset:
-        asset_details = {
+        # Serialize the asset data and return it as JSON
+        asset_data = {
             "serialNumber": asset.SerialNumber,
-            "model": asset.Model.ModelName,
-            "employeeName": asset.Employee.FirstName + " " + asset.Employee.LastName,
-            "status": asset.Status.name,
-            "condition": asset.Condition.name,
-            "stockroom": asset.Stockroom.name,
+            "model": asset.model.ModelName,
+            "employeeName": asset.employees.FirstName,
+            "status": asset.status.name,
+            "condition": asset.condition.name,
+            "stockroom": asset.stockroom.name
         }
-        return jsonify(asset_details)
+        return jsonify(asset_data)
     else:
-        return jsonify({"error": "Asset not found"}), 404
+        return jsonify({"message": "Asset not found"}), 404
 
 
 if __name__ == "__main__":
