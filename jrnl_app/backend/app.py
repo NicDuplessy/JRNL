@@ -376,8 +376,8 @@ def add_request():
         SerialNumber=data["SerialNumber"],
         Date=date_obj,
         Issue=data["Issue"],
-        status_id=data["status_id"],
-        condition_id=data["condition_id"],
+        status_id=int(data["status_id"]),  # Convert to int
+        condition_id=int(data["condition_id"]),  # Convert to int
     )
     db.session.add(new_request)
     db.session.commit()
@@ -388,7 +388,7 @@ def add_request():
 def get_request_tickets():
     # Query the database for request tickets with status_id = 1 and sorted by date
     request_tickets = Request.query.filter_by(status_id=1).order_by(Request.Date).all()
-    
+
     # Serialize the request tickets and return them as JSON
     return jsonify([request.serialize for request in request_tickets])
 

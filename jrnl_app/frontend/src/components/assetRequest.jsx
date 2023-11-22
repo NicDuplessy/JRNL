@@ -41,6 +41,7 @@ function AssetRequests() {
       .then((response) => response.json())
       .then((data) => setEmployees(data))
       .catch((error) => console.error("Error fetching employees:", error));
+
     if (selectedEmployee) {
       fetch(`http://127.0.0.1:5000/employee-status/${selectedEmployee}`)
         .then((response) => response.json())
@@ -165,13 +166,13 @@ function AssetRequests() {
             onChange={handleInputChange}
           />
         </div>
-        <div>
+        <div style={{ display: "none" }}>
           <label>Status Number:</label>
-          <input type="text" value={statuses} disabled />
+          <input type="text" value={statuses} />
         </div>
-        <div>
+        <div style={{ display: "none" }}>
           <label>Condition Number:</label>
-          <input type="text" value={conditions} disabled />
+          <input type="text" value={conditions} />
         </div>
         <div>
           <button type="submit">Submit</button>
