@@ -29,10 +29,10 @@ class Model(db.Model):
 
 
 class Condition(db.Model):
-    __tablename__ = "condition"
+    __tablename__ = "conditions"
     condition_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    assets = db.relationship("Asset", backref="condition", lazy=True)
+    assets = db.relationship("Asset", backref="conditions", lazy=True)
 
     @property
     def serialize(self):
@@ -64,7 +64,7 @@ class Status(db.Model):
 class Asset(db.Model):
     __tablename__ = "asset"
     SerialNumber = db.Column(db.Integer, primary_key=True)
-    condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
+    condition_id = db.Column(db.Integer, db.ForeignKey("conditions.condition_id"))
     ModelID = db.Column(db.Integer, db.ForeignKey("model.ModelID"))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
     stockroom_id = db.Column(db.Integer, db.ForeignKey("stockroom.stockroom_id"))
@@ -111,10 +111,10 @@ class Request(db.Model):
     RequestNumber = db.Column(db.Integer, primary_key=True)
     EmployeeNumber = db.Column(db.Integer, db.ForeignKey("employee.EmployeeNumber"))
     SerialNumber = db.Column(db.Integer, db.ForeignKey("asset.SerialNumber"))
-    Date = db.Column(Date)
+    Date = db.Column(db.String(255))
     Issue = db.Column(db.String(255))
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"))
-    condition_id = db.Column(db.Integer, db.ForeignKey("condition.condition_id"))
+    condition_id = db.Column(db.Integer, db.ForeignKey("conditions.condition_id"))
 
     @property
     def serialize(self):
@@ -370,16 +370,16 @@ def get_all_requests():
 @app.route("/request", methods=["POST"])
 def add_request():
     data = request.json
-    date_obj = datetime.strptime(data["Date"], "%Y-%m-%d").date()
 
     new_request = Request(
         EmployeeNumber=data["EmployeeNumber"],
         SerialNumber=data["SerialNumber"],
-        Date=date_obj,
+        Date=data["Date"],
         Issue=data["Issue"],
         status_id=data["status_id"],
         condition_id=data["condition_id"],
     )
+
     db.session.add(new_request)
     db.session.commit()
     return jsonify(new_request.serialize), 201
