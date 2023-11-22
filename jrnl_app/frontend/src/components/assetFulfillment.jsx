@@ -1,76 +1,148 @@
 import React, { useState, useEffect } from "react";
 
 function AssetFulfillment() {
-  // State variables to manage ticket information and asset status
-  const [models, setModels] = useState([]); //for model data
-  const [employees, setEmployees] = useState([]); //for employee data
-  const [requests, setRequests] = useState([]); //for request data
-  const [statuses, setStatuses] = useState([]); //for status data
-  const [conditions, setConditions] = useState([]); // For condition data
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
-  const [selectedRequest, setSelectedRequest] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedCondition, setSelectedCondition] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [requestTickets, setRequestTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [statuses, setStatuses] = useState([]);
+  const [conditions, setConditions] = useState([]);
 
-  // useEffect to fetch models and employee information
   useEffect(() => {
-    //fetch models
-    fetch("http://127.0.0.1:500/models")
+    // Fetch request tickets with status_id equal to 1 and sorted by date
+    fetch("http://127.0.0.1:5000/request-tickets")
       .then((response) => response.json())
-      .then((data) => setModels(data))
-      .catch((error) => console.error("Error retrieving models", error));
-
-    //fetch employees
-    fetch("http://127.0.0.1:5000/employees")
-      .then((response) => response.json())
-      .then((data) => setEmployees(data))
-      .catch((error) => console.error("Error retrieving employees", error));
-
-    // Fetch conditions
-    fetch("http://127.0.0.1:5000/conditions")
-      .then((response) => response.json())
-      .then((data) => setConditions(data));
+      .then((data) => {
+        // Sort request tickets by date
+        const sortedTickets = data.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+        setRequestTickets(sortedTickets);
+      })
+      .catch((error) => console.error("Error fetching request tickets:", error));
 
     // Fetch statuses
     fetch("http://127.0.0.1:5000/statuses")
       .then((response) => response.json())
-      .then((data) => setStatuses(data));
+      .then((data) => setStatuses(data))
+      .catch((error) => console.error("Error fetching statuses:", error));
+
+    // Fetch conditions
+    fetch("http://127.0.0.1:5000/conditions")
+      .then((response) => response.json())
+      .then((data) => setConditions(data))
+      .catch((error) => console.error("Error fetching conditions:", error));
   }, []);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    switch (name) {
-      case "model":
-        setSelectedModel(value);
-        break;
-      case "assignedTo":
-        setSelectedEmployee(value);
-        break;
-      default:
-        break;
-    }
+  const handleTicketSelect = (event) => {
+    const selectedTicketId = event.target.value;
+    const ticket = requestTickets.find((t) => t.RequestNumber === Number(selectedTicketId));
+    setSelectedTicket(ticket);
+  };
+
+  const handleStatusChange = (event) => {
+    // Update the status of the selected ticket in the component state
+    setSelectedTicket({
+      ...selectedTicket,
+      status_id: Number(event.target.value),
+    });
+  };
+
+  const handleConditionChange = (event) => {
+    // Update the condition of the selected ticket in the component state
+    setSelectedTicket({
+      ...selectedTicket,
+      condition_id: Number(event.target.value),
+    });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    //Construct requestData  object from the state variables
-    const requestData = {
-      ModelID: selectedModel,
-      assignedTo: selectedEmployee,
-    };
-
-    //POST request to Flask backend
+    // Update the request ticket in the database with the new status and condition
+    fetch(`http://127.0.0.1:5000/update-request-ticket/${selectedTicket.RequestNumber}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(selectedTicket),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Request ticket updated successfully:", data);
+        // Handle success
+      })
+      .catch((error) => {
+        console.error("Error updating request ticket:", error);
+        // Handle errors
+      });
   };
 
   return (
-    <div>
+    <div className="asset-fulfillment">
       <h2>Asset Fulfillment</h2>
-      <div>
-        <button>Fulfill Asset Request</button>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Select Request:</label>
+          <select onChange={handleTicketSelect}>
+            <option value="">Select a Request</option>
+            {requestTickets.map((ticket) => (
+              <option key={ticket.RequestNumber} value={ticket.RequestNumber}>
+                {ticket.RequestNumber} - {ticket.Date}
+              </option>
+            ))}
+          </select>
+        </div>
+        {selectedTicket && (
+          <div>
+            <h3>Request Details</h3>
+            <div>
+              <label>Serial Number:</label>
+              <span>{selectedTicket.SerialNumber}</span>
+            </div>
+            <div>
+              <label>Model:</label>
+              <span>{selectedTicket.ModelID}</span>
+            </div>
+            <div>
+              <label>Employee Name:</label>
+              <span>{selectedTicket.EmployeeNumber}</span>
+            </div>
+            <div>
+              <label>Date:</label>
+              <span>{selectedTicket.Date}</span>
+            </div>
+            <div>
+              <label>Issue:</label>
+              <span>{selectedTicket.Issue}</span>
+            </div>
+            <div>
+              <label>Status:</label>
+              <select value={selectedTicket.status_id} onChange={handleStatusChange}>
+                {statuses.map((status) => (
+                  <option key={status.status_id} value={status.status_id}>
+                    {status.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>Condition:</label>
+              <select value={selectedTicket.condition_id} onChange={handleConditionChange}>
+                {conditions.map((condition) => (
+                  <option key={condition.condition_id} value={condition.condition_id}>
+                    {condition.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <button type="submit">Submit</button>
+            </div>
+          </div>
+        )}
+      </form>
     </div>
   );
 }
