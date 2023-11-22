@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import Date
 from datetime import datetime
+from flask import request, jsonify
 
 app = Flask(__name__)
 CORS(app)
@@ -485,34 +486,45 @@ def get_employee_asset(employee_number):
 
 
 # Routes for Tracking
+
+@app.route("/employee-names", methods=["GET"])
+def get_employee_names():
+    employees = Employee.query.with_entities(Employee.FirstName, Employee.LastName).all()
+    # Combining first and last names
+    employee_names = [f"{emp[0]} {emp[1]}" for emp in employees]
+    return jsonify(employee_names)
+
+@app.route("/serial-numbers", methods=["GET"])
+def get_serial_numbers_list():
+    serial_numbers = Asset.query.with_entities(Asset.SerialNumber).all()
+    # Extracting serial numbers from the tuples
+    serial_list = [num[0] for num in serial_numbers]
+    return jsonify(serial_list)
+
+from flask import request, jsonify
+
 @app.route("/api/search-asset", methods=["POST"])
 def search_asset():
     data = request.json
 
+    # Search by serial number
     if "serialNumber" in data:
-        # Search by serial number
         serial_number = data["serialNumber"]
         asset = Asset.query.filter_by(SerialNumber=serial_number).first()
-    elif "employeeName" in data:
-        # Search by employee name
-        employee_name = data["employeeName"]
-        asset = Asset.query.join(Employee).filter(Employee.FirstName == employee_name).first()
-    else:
-        return jsonify({"message": "Invalid search criteria"}), 400
+        if asset:
+            return jsonify(asset.serialize)
 
-    if asset:
-        # Serialize the asset data and return it as JSON
-        asset_data = {
-            "serialNumber": asset.SerialNumber,
-            "model": asset.model.ModelName,
-            "employeeName": asset.employees.FirstName,
-            "status": asset.status.name,
-            "condition": asset.condition.name,
-            "stockroom": asset.stockroom.name
-        }
-        return jsonify(asset_data)
-    else:
-        return jsonify({"message": "Asset not found"}), 404
+    # Search by employee name
+    elif "employeeName" in data:
+        employee_name = data["employeeName"]
+        # Assuming employee name is in "FirstName LastName" format
+        first_name, last_name = employee_name.split(" ", 1)
+        employee = Employee.query.filter_by(FirstName=first_name, LastName=last_name).first()
+        if employee and employee.asset:
+            return jsonify(employee.asset.serialize)
+
+    return jsonify({"message": "Asset not found"}), 404
+
 
 
 if __name__ == "__main__":

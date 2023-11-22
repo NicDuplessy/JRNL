@@ -11,6 +11,9 @@ function AssetRequests() {
   const [requestDate, setRequestDate] = useState(""); // State for the date
   const [conditions, setConditions] = useState(""); // For condition data
   const [statuses, setStatuses] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedCondition, setSelectedCondition] = useState("");
+
 
   // Fetch data from the backend
   useEffect(() => {
@@ -56,6 +59,12 @@ function AssetRequests() {
       case "requestDate":
         setRequestDate(value);
         break;
+      case "status":
+        setSelectedStatus(value);
+        break;
+      case "condition":
+        setSelectedCondition(value);
+        break;    
       default:
         break;
     }
@@ -69,8 +78,8 @@ function AssetRequests() {
       SerialNumber: selectedSerialNumber,
       Issue: issue,
       Date: requestDate,
-      status_id: statuses,
-      condition_id: conditions,
+      status_id: selectedStatus, // selectedStatus should be a numeric ID
+      condition_id: selectedCondition, // selectedCondition should be a numeric ID
     };
 
     // POST request to Flask backend
@@ -156,11 +165,29 @@ function AssetRequests() {
         </div>
         <div>
           <label>Status Number:</label>
-          <input type="text" value={statuses} />
-        </div>
-        <div>
-          <label>Condition Number:</label>
-          <input type="text" value={conditions} />
+          <select
+            name="status"
+            value={selectedStatus}
+            onChange={handleInputChange} // Use handleInputChange to update state
+          >
+            {statuses.map(status => (
+              <option key={status.id} value={status.id}>
+                {status.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="condition"
+            value={selectedCondition}
+            onChange={handleInputChange} // Use handleInputChange to update state
+          >
+            {conditions.map(condition => (
+              <option key={condition.id} value={condition.id}>
+                {condition.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <button type="submit">Submit</button>

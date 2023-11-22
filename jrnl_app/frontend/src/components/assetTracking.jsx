@@ -2,77 +2,84 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function AssetTracking() {
-  // Define state variables
-  const [serialNumber, setSerialNumber] = useState('');
-  const [employeeName, setEmployeeName] = useState('');
+  const [serialNumbers, setSerialNumbers] = useState([]);
+  const [employeeNames, setEmployeeNames] = useState([]);
+  const [selectedSerialNumber, setSelectedSerialNumber] = useState('');
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState('');
   const [assetInfo, setAssetInfo] = useState(null);
-
-  // Function to handle the search and fetch asset information
-  const searchAsset = async () => {
+  const handleSearch = async () => {
     try {
       // Define the search criteria based on user input
       let searchCriteria = {};
-
-      if (serialNumber) {
-        searchCriteria.serialNumber = serialNumber;
-      } else if (employeeName) {
-        searchCriteria.employeeName = employeeName;
+      if (selectedSerialNumber) {
+        searchCriteria.serialNumber = selectedSerialNumber;
+      } else if (selectedEmployeeName) {
+        searchCriteria.employeeName = selectedEmployeeName;
       } else {
         // Handle case where neither serial number nor employee name is provided
+        alert("Please select a Serial Number or an Employee Name."); // Simple alert, or use a more sophisticated approach
         return;
       }
 
       // Send a request to the backend to fetch asset information
-      const response = await axios.post('/api/search-asset', searchCriteria);
-
-      // Update the assetInfo state with the fetched data
+      const response = await axios.post('http://127.0.0.1:5000/api/search-asset', searchCriteria);
       setAssetInfo(response.data);
     } catch (error) {
-      // Handle errors, e.g., display an error message to the user
       console.error('Error fetching asset information:', error);
+      alert("Failed to fetch asset information."); // Simple alert, or use a more sophisticated approach
     }
   };
 
-  // Render the component
+  useEffect(() => {
+    // Fetch Serial Numbers
+    fetch("http://127.0.0.1:5000/serial-numbers")
+      .then((response) => response.json())
+      .then((data) => setSerialNumbers(data))
+      .catch((error) => console.error('Error fetching serial numbers:', error));
+
+    // Fetch Employee Names
+    fetch("http://127.0.0.1:5000/employees") // Adjust if a different endpoint is used for employee names
+      .then((response) => response.json())
+      .then((data) => {
+        const names = data.map(emp => `${emp.FirstName} ${emp.LastName}`);
+        setEmployeeNames(names);
+      })
+      .catch((error) => console.error('Error fetching employee names:', error));
+  }, []);
+
+
   return (
     <div>
       <h1>Asset Tracking</h1>
       <div>
         <label>Search by Serial Number:</label>
         <select
-          onChange={(e) => setSerialNumber(e.target.value)}
-          value={serialNumber}
+          onChange={(e) => setSelectedSerialNumber(e.target.value)}
+          value={selectedSerialNumber}
         >
           <option value="">Select Serial Number</option>
-          {/* Populate the dropdown with serial numbers from the database */}
-          {serialNumbers.map((serial) => (
-            <option key={serial} value={serial}>
-              {serial}
-            </option>
+          {serialNumbers.map((num) => (
+            <option key={num} value={num}>{num}</option>
           ))}
         </select>
       </div>
       <div>
         <label>Search by Employee Name:</label>
         <select
-          onChange={(e) => setEmployeeName(e.target.value)}
-          value={employeeName}
+          onChange={(e) => setSelectedEmployeeName(e.target.value)}
+          value={selectedEmployeeName}
         >
           <option value="">Select Employee Name</option>
-          {/* Populate the dropdown with employee names from the database */}
           {employeeNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
+            <option key={name} value={name}>{name}</option>
           ))}
         </select>
       </div>
-      <button onClick={searchAsset}>Submit</button>
-
-      {/* Display asset information if available */}
+      <button onClick={handleSearch}>Submit</button>
       {assetInfo && (
         <div>
           <h2>Asset Information</h2>
+          {/* Render the asset information */}
           <p>Serial Number: {assetInfo.serialNumber}</p>
           <p>Model: {assetInfo.model}</p>
           <p>Employee Name: {assetInfo.employeeName}</p>
