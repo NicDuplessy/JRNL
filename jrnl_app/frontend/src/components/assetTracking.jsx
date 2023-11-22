@@ -27,7 +27,7 @@ function AssetTracking() {
   };
 
   return (
-    <div>
+    <div className="asset-entry-form">
       <h2>Asset Tracking</h2>
       <form onSubmit={handleSubmit}>
         <div>
