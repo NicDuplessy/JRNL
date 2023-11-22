@@ -14,7 +14,6 @@ function AssetRequests() {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
 
-
   // Fetch data from the backend
   useEffect(() => {
     // Fetch next request number
@@ -50,6 +49,7 @@ function AssetRequests() {
     switch (name) {
       case "serialNumber":
         setSelectedSerialNumber(value);
+        break;
       case "assignedTo":
         setSelectedEmployee(value);
         break;
@@ -64,7 +64,7 @@ function AssetRequests() {
         break;
       case "condition":
         setSelectedCondition(value);
-        break;    
+        break;
       default:
         break;
     }
@@ -170,7 +170,7 @@ function AssetRequests() {
             value={selectedStatus}
             onChange={handleInputChange} // Use handleInputChange to update state
           >
-            {statuses.map(status => (
+            {statuses.map((status) => (
               <option key={status.id} value={status.id}>
                 {status.name}
               </option>
@@ -182,7 +182,7 @@ function AssetRequests() {
             value={selectedCondition}
             onChange={handleInputChange} // Use handleInputChange to update state
           >
-            {conditions.map(condition => (
+            {conditions.map((condition) => (
               <option key={condition.id} value={condition.id}>
                 {condition.name}
               </option>
