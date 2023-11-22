@@ -1,116 +1,71 @@
+import React, { useState } from 'react';
+import axios from 'axios'; // You can use Axios for making API requests
 
-import React, { useState, useEffect } from "react";
-// import axios from 'axios'; // Commented out backend integration for now
+function AssetTracking() {
+  const [searchType, setSearchType] = useState('serialNumber'); // Default to searching by serial number
+  const [searchValue, setSearchValue] = useState('');
+  const [assetDetails, setAssetDetails] = useState(null);
 
-const AssetTracking = () => {
-  const [assets, setAssets] = useState([]);
-  const [selectedAssets, setSelectedAssets] = useState([]);
-  const [criteria, setCriteria] = useState({
-    serialNumber: "",
-    model: "Select Model",
-    employeeAssigned: "",
-  });
-
-  useEffect(() => {
-    // Simulate fetching assets when the component mounts
-    // Replace this with an actual backend API call
-    const fetchedAssets = [
-      {
-        id: 1,
-        name: "Asset 1",
-        serialNumber: "SN001",
-        model: "Spectre",
-        employeeAssigned: "Employee A",
-      },
-      {
-        id: 2,
-        name: "Asset 2",
-        serialNumber: "SN002",
-        model: "Thinkpad",
-        employeeAssigned: "Employee B",
-      },
-      // ... Add more assets here ...
-    ];
-
-    setAssets(fetchedAssets);
-  }, []);
-
-  const retireAssets = () => {
-    // Simulate retiring assets - replace with actual backend integration
-    console.log("Retiring assets:", selectedAssets);
-    console.log("Criteria:", criteria);
-
-    // Make a request to retire selected assets with specified criteria
-    // axios.post('/api/retire', { selectedAssets, criteria }).then((response) => {
-    //   // Update UI or show a success message
-    //   // You may also want to handle errors here
-    // });
+  const handleSearchTypeChange = (e) => {
+    setSearchType(e.target.value);
   };
 
-  const handleAssetSelection = (asset) => {
-    // Toggle asset selection
-    if (selectedAssets.includes(asset.id)) {
-      setSelectedAssets(selectedAssets.filter((id) => id !== asset.id));
-    } else {
-      setSelectedAssets([...selectedAssets, asset.id]);
+  const handleSearchValueChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Make an API request to fetch asset details based on the selected search type and value
+    try {
+      const response = await axios.get(`/api/asset-tracking?searchType=${searchType}&searchValue=${searchValue}`);
+      setAssetDetails(response.data);
+    } catch (error) {
+      console.error('Error fetching asset details:', error);
+      // Handle errors as needed
     }
   };
 
   return (
     <div>
-      <div>
-        <label>Serial Number:</label>
-        <input
-          type="text"
-          value={criteria.serialNumber}
-          placeholder="Serial Number"
-          onChange={(e) =>
-            setCriteria({ ...criteria, serialNumber: e.target.value })
-          }
-        />
-      </div>
-      <div>
-        <label>Model:</label>
-        <select
-          value={criteria.model}
-          onChange={(e) => setCriteria({ ...criteria, model: e.target.value })}
-        >
-          <option value="Select Model">Select Model</option>
-          <option value="Spectre">Spectre</option>
-          <option value="Thinkpad">Thinkpad</option>
-          <option value="Zenbook">Zenbook</option>
-          <option value="XPS">XPS</option>
-          <option value="Macbook">Macbook</option>
-        </select>
-      </div>
-      <div>
-        <label>Employee Assigned:</label>
-        <input
-          type="text"
-          value={criteria.employeeAssigned}
-          placeholder="Assigned To"
-          onChange={(e) =>
-            setCriteria({ ...criteria, employeeAssigned: e.target.value })
-          }
-        />
-      </div>
-      {/* UI for displaying assets and selecting them */}
-      <ul>
-        {assets.map((asset) => (
-          <li key={asset.id}>
+      <h2>Asset Tracking</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>
+            Search By:
+            <select value={searchType} onChange={handleSearchTypeChange}>
+              <option value="serialNumber">Serial Number</option>
+              <option value="employeeName">Employee Name</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            Search Value:
             <input
-              type="checkbox"
-              checked={selectedAssets.includes(asset.id)}
-              onChange={() => handleAssetSelection(asset)}
+              type="text"
+              value={searchValue}
+              onChange={handleSearchValueChange}
             />
-            {asset.name} (Serial Number: {asset.serialNumber}, Model:{" "}
-            {asset.model}, Employee Assigned: {asset.employeeAssigned})
-          </li>
-        ))}
-      </ul>
-      <button onClick={retireAssets}>Retire Selected Assets</button>
+          </label>
+        </div>
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+      {assetDetails && (
+        <div>
+          <h3>Asset Details</h3>
+          <p>Serial Number: {assetDetails.serialNumber}</p>
+          <p>Model: {assetDetails.model}</p>
+          <p>Employee Name: {assetDetails.employeeName}</p>
+          <p>Status: {assetDetails.status}</p>
+          <p>Condition: {assetDetails.condition}</p>
+          <p>Stockroom: {assetDetails.stockroom}</p>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default AssetTracking;
