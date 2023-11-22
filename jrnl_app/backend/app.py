@@ -420,5 +420,31 @@ def get_serial_numbers():
     return jsonify(serial_list)
 
 
+@app.route("/employee-status/<int:employee_number>", methods=["GET"])
+def get_employee_status(employee_number):
+    # Join Employee with Asset and Status to get the current status of the employee's asset
+    status = (
+        db.session.query(Status.name)
+        .join(Asset, Status.status_id == Asset.status_id)
+        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .filter(Employee.EmployeeNumber == employee_number)
+        .first()
+    )
+    return jsonify({"status": status.name if status else None})
+
+
+@app.route("/employee-condition/<int:employee_number>", methods=["GET"])
+def get_employee_condition(employee_number):
+    # Join Employee with Asset and Condition to get the current condition of the employee's asset
+    condition = (
+        db.session.query(Condition.name)
+        .join(Asset, Condition.condition_id == Asset.condition_id)
+        .join(Employee, Employee.AssetSerialNumber == Asset.SerialNumber)
+        .filter(Employee.EmployeeNumber == employee_number)
+        .first()
+    )
+    return jsonify({"condition": condition.name if condition else None})
+
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -41,7 +41,16 @@ function AssetRequests() {
       .then((response) => response.json())
       .then((data) => setEmployees(data))
       .catch((error) => console.error("Error fetching employees:", error));
-  }, []);
+    if (selectedEmployee) {
+      fetch(`http://127.0.0.1:5000/employee-status/${selectedEmployee}`)
+        .then((response) => response.json())
+        .then((data) => setStatuses(data.status)); // Assuming the response has a `status` property
+
+      fetch(`http://127.0.0.1:5000/employee-condition/${selectedEmployee}`)
+        .then((response) => response.json())
+        .then((data) => setConditions(data.condition)); // Assuming the response has a `condition` property
+    }
+  }, [selectedEmployee]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -57,12 +66,6 @@ function AssetRequests() {
         break;
       case "requestDate":
         setRequestDate(value);
-        break;
-      case "conditions":
-        setConditions(value);
-        break;
-      case statuses:
-        setStatuses(value);
         break;
       default:
         break;
