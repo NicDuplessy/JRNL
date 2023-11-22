@@ -416,3 +416,28 @@ h2, p {
 .asset-entry-form button:hover {
   background-color: #429192; /* Slightly darker color on hover */
 }
+
+/* Specific Styles for Tracking View */
+.tracking-view .logo-view,
+.tracking-view .view-tiles-container,
+.tracking-view .view-icon-container,
+.tracking-view .asset-entry-container {
+  border-radius: 8px;
+}
+
+/* Specific Styles for Fulfillment View */
+.fulfillment-view .logo-view,
+.fulfillment-view .view-tiles-container,
+.fulfillment-view .view-icon-container,
+.fulfillment-view .asset-entry-container {
+  border-radius: 8px;
+}
+
+/* Specific Styles for Request View */
+.request-view .logo-view,
+.request-view .view-tiles-container,
+.request-view .view-icon-container,
+.request-view .asset-entry-container {
+  border-radius: 8px;
+}
+
