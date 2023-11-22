@@ -264,8 +264,8 @@ def delete_employee(employee_number):
 # Routes for Condition Table
 @app.route("/conditions", methods=["GET"])
 def get_all_conditions():
-    conditions = Condition.query.all()
-    return jsonify([condition.serialize for condition in conditions])
+    conditions = Conditions.query.all()
+    return jsonify([conditions.serialize for conditions in conditions])
 
 
 @app.route("/condition", methods=["POST"])
