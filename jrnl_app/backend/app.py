@@ -372,16 +372,6 @@ def add_request():
     data = request.json
     date_obj = datetime.strptime(data["Date"], "%Y-%m-%d").date()
 
-    # Validate status_id and condition_id
-    status_id = data.get("status_id")
-    condition_id = data.get("condition_id")
-
-    if not status_id or not Status.query.get(status_id):
-        return jsonify({"error": "Invalid status_id"}), 400
-
-    if not condition_id or not Condition.query.get(condition_id):
-        return jsonify({"error": "Invalid condition_id"}), 400
-
     new_request = Request(
         EmployeeNumber=data["EmployeeNumber"],
         SerialNumber=data["SerialNumber"],
