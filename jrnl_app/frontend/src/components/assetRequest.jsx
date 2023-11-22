@@ -20,17 +20,6 @@ function AssetRequests() {
       .then((data) => setRequestNumber(data.nextRequestNumber))
       .catch((error) => console.error("Error fetching request number:", error));
 
-    // Fetch statuses
-    fetch("http://127.0.0.1:5000/statuses")
-      .then((response) => response.json())
-      .then((data) => setStatuses(data));
-
-    // Fetch conditions
-    fetch("http://127.0.0.1:5000/conditions")
-      .then((response) => response.json())
-      .then((data) => setConditions(data));
-
-    // Fetch serial numbers
     fetch("http://127.0.0.1:5000/serial-numbers") // Update the URL to the new endpoint
       .then((response) => response.json())
       .then((data) => setSerialNumbers(data))
@@ -64,27 +53,6 @@ function AssetRequests() {
           console.error("Error fetching employee asset:", error);
           setSelectedSerialNumber(""); // Reset or handle error
         });
-
-      const fetchEmployeeAssetDetails = async () => {
-        if (selectedEmployee) {
-          try {
-            // Fetch asset details for the selected employee
-            const response = await fetch(
-              `http://127.0.0.1:5000/employee/${selectedEmployee}/asset`
-            );
-            const assetData = await response.json();
-            if (assetData.SerialNumber) {
-              setSelectedSerialNumber(assetData.SerialNumber); // Set the serial number
-            } else {
-              setSelectedSerialNumber(""); // No asset found for the selected employee
-            }
-          } catch (error) {
-            console.error("Error fetching employee asset details:", error);
-          }
-        }
-      };
-
-      fetchEmployeeAssetDetails();
     }
   }, [selectedEmployee]);
 
