@@ -5,6 +5,45 @@ function AssetFulfillment() {
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [conditions, setConditions] = useState([]);
+  const [employeeName, setEmployeeName] = useState("");
+  const [laptopModel, setLaptopModel] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  async function fetchLaptopModel(serialNumber) {
+    // Fetch the ModelID from the asset table
+    const response1 = await fetch(`http://127.0.0.1:5000/asset/${serialNumber}`);
+    const data1 = await response1.json();
+    const modelID = data1.ModelID;
+  
+    // Fetch the ModelName from the model table
+    const response2 = await fetch(`http://127.0.0.1:5000/model/${modelID}`);
+    const data2 = await response2.json();
+    return data2.ModelName;
+  }
+
+  async function fetchEmployeeName(employeeNumber) {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/employee/${employeeNumber}/name`);
+      const data = await response.json();
+      return `${data.firstName} ${data.lastName}`;
+    } catch (error) {
+      console.error('Error fetching employee name:', error);
+    }
+  }
+
+    // Fetch the laptop model when the selected ticket changes
+  useEffect(() => {
+    if (selectedTicket && selectedTicket.SerialNumber) {
+      fetchLaptopModel(selectedTicket.SerialNumber).then(setLaptopModel);
+    }
+  }, [selectedTicket]);
+
+    // Fetch the employee name when the selected ticket changes
+  useEffect(() => {
+    if (selectedTicket) {
+      fetchEmployeeName(selectedTicket.EmployeeNumber).then(setEmployeeName);
+    }
+  }, [selectedTicket]);
 
   useEffect(() => {
     // Fetch request tickets with status_id equal to 1 and sorted by date
@@ -79,10 +118,39 @@ function AssetFulfillment() {
       });
   };
 
+  function handleFormSubmit(event) {
+    event.preventDefault();
+  
+    const data = {
+      status_id: selectedTicket.status_id,
+      condition_id: selectedTicket.condition_id,
+      // Include any other data that needs to be updated
+    };
+  
+    fetch(`http://127.0.0.1:5000/request/${selectedTicket.RequestNumber}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setIsSubmitted(true);
+        } else {
+          // Handle error
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
   return (
     <div className="asset-entry-form">
       <h2>Asset Fulfillment</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <div>
           <label>Select Request:</label>
           <select onChange={handleTicketSelect}>
@@ -99,23 +167,23 @@ function AssetFulfillment() {
             <h3>Request Details</h3>
             <div>
               <label>Serial Number:</label>
-              <span>{selectedTicket.SerialNumber}</span>
+              <span className="static-data">{selectedTicket.SerialNumber}</span>
             </div>
             <div>
               <label>Model:</label>
-              <span>{selectedTicket.ModelID}</span>
+              <span className="static-data">{laptopModel}</span>
             </div>
             <div>
               <label>Employee Name:</label>
-              <span>{selectedTicket.EmployeeNumber}</span>
+              <span className="static-data">{employeeName}</span>
             </div>
             <div>
               <label>Date:</label>
-              <span>{selectedTicket.Date}</span>
+              <span className="static-data">{selectedTicket.Date}</span>
             </div>
             <div>
               <label>Issue:</label>
-              <span>{selectedTicket.Issue}</span>
+              <span className="static-data">{selectedTicket.Issue}</span>
             </div>
             <div>
               <label>Status:</label>
@@ -139,6 +207,7 @@ function AssetFulfillment() {
             </div>
             <div>
               <button type="submit">Submit</button>
+              {isSubmitted && <p>Asset Status Updated</p>}
             </div>
           </div>
         )}

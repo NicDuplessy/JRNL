@@ -441,3 +441,13 @@ h2, p {
   border-radius: 8px;
 }
 
+.static-data {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+  width: 100%;
+  font-family: Arial; /* Replace with the actual font family */
+  font-size: 13px; /* Replace with the actual font size */
+  font-weight: 500; /* Replace with the actual font weight */
+}
