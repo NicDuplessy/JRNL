@@ -8,6 +8,18 @@ function AssetTracking() {
   const [selectedEmployeeName, setSelectedEmployeeName] = useState("");
   const [assetInfo, setAssetInfo] = useState([]);
 
+  async function getEmployeeName(SerialNumber) {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:5000/api/employee/${SerialNumber}`
+      );
+      return response.data.name;
+    } catch (error) {
+      console.error("Error fetching employee name:", error);
+      return null; // Or handle the error in some other way
+    }
+  }
+
   const handleSearch = async () => {
     try {
       // Define the search criteria based on user input
@@ -22,19 +34,36 @@ function AssetTracking() {
         return;
       }
 
-      // Send a request to the backend to fetch asset information
       const response = await axios.post(
         "http://127.0.0.1:5000/api/search-asset",
         searchCriteria
       );
-      console.log("Response:", response);
       setAssetInfo(response.data);
-      console.log("Asset Info:", assetInfo);
-      console.log("Asset Info:", assetInfo.serialNumber);
+
+      // Fetch the employee name
+      const employeeResponse = await axios.get(
+        `http://127.0.0.1:5000/api/employee/${response.data.SerialNumber}`
+      );
+
+      // Check if the employee was found
+      if (employeeResponse.data.name) {
+        // Create a new object to avoid directly mutating state
+        const newAssetInfo = {
+          ...response.data,
+          employeeName: employeeResponse.data.name,
+        };
+        setAssetInfo(newAssetInfo);
+      } else {
+        console.error("Employee not found");
+      }
     } catch (error) {
       console.error("Error fetching asset information:", error);
       alert("Failed to fetch asset information."); // Simple alert, or use a more sophisticated approach
     }
+
+    const employeeName = await getEmployeeName(assetInfo.SerialNumber);
+
+    assetInfo.employeeName = employeeName;
   };
 
   useEffect(() => {

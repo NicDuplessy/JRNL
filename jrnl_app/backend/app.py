@@ -261,6 +261,15 @@ def delete_employee(employee_number):
     return jsonify({"message": "Employee deleted"}), 204
 
 
+@app.route("/api/employee/<int:serial_number>", methods=["GET"])
+def get_employee(serial_number):
+    employee = Employee.query.filter_by(SerialNumber=serial_number).first()
+    if employee:
+        return jsonify({"name": f"{employee.FirstName} {employee.LastName}"})
+    else:
+        return jsonify({"error": "Employee not found"}), 404
+
+
 # Routes for Condition Table
 @app.route("/conditions", methods=["GET"])
 def get_all_conditions():
