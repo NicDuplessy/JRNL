@@ -86,7 +86,7 @@ function AssetTracking() {
   }, [assetInfo]);
 
   return (
-    <div>
+    <div className="asset-entry-form">
       <h1>Asset Tracking</h1>
       <div>
         <label>Search by Serial Number:</label>
