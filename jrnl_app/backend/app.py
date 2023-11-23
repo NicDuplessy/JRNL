@@ -263,7 +263,9 @@ def delete_employee(employee_number):
 
 @app.route("/api/employee/<int:serial_number>", methods=["GET"])
 def get_employee(serial_number):
+    print(f"Fetching employee with serial number {serial_number}")
     employee = Employee.query.filter_by(SerialNumber=serial_number).first()
+    print(f"Found employee: {employee}")
     if employee:
         return jsonify({"name": f"{employee.FirstName} {employee.LastName}"})
     else:

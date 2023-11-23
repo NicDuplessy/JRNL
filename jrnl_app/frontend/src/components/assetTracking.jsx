@@ -38,11 +38,13 @@ function AssetTracking() {
         "http://127.0.0.1:5000/api/search-asset",
         searchCriteria
       );
+      console.log("Asset response data:", response.data);
       setAssetInfo(response.data);
 
       // Fetch the employee name
+      const { SerialNumber } = response.data;
       const employeeResponse = await axios.get(
-        `http://127.0.0.1:5000/api/employee/${response.data.SerialNumber}`
+        `http://127.0.0.1:5000/api/employee/${SerialNumber}`
       );
 
       // Check if the employee was found
