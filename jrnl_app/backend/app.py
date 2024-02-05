@@ -8,10 +8,10 @@ from flask import request, jsonify
 app = Flask(__name__)
 CORS(app)
 
-# Database configuration using PyMySQL
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = "mysql+pymysql://Code:pQef-TSIW)Cgpw00@jessepaulwells.ddnsgeek.com:3306/jrnl_database"
+# Database configuration using PyMySQL will add to gitignore
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "mysql+pymysql://Code:pQef-TSIW)Cgpw00@jessepaulwells.ddnsgeek.com:3306/jrnl_database"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
@@ -495,7 +495,8 @@ def get_employee_asset(employee_number):
         return jsonify({"SerialNumber": employee_asset.SerialNumber})
     else:
         return jsonify({"error": "No asset found for the given employee"}), 404
-    
+
+
 @app.route("/employee/<int:employee_number>/name", methods=["GET"])
 def get_employee_name(employee_number):
     employee = Employee.query.filter_by(EmployeeNumber=employee_number).first()
@@ -503,7 +504,8 @@ def get_employee_name(employee_number):
         return jsonify({"firstName": employee.FirstName, "lastName": employee.LastName})
     else:
         return jsonify({"error": "No employee found with the given number"}), 404
-    
+
+
 @app.route("/asset/<string:serial_number>", methods=["GET"])
 def get_asset(serial_number):
     asset = Asset.query.filter_by(SerialNumber=serial_number).first()
@@ -512,6 +514,7 @@ def get_asset(serial_number):
     else:
         return jsonify({"error": "No asset found with the given serial number"}), 404
 
+
 @app.route("/model/<int:model_id>", methods=["GET"])
 def get_model(model_id):
     model = Model.query.get(model_id)
@@ -519,6 +522,7 @@ def get_model(model_id):
         return jsonify({"ModelName": model.ModelName})
     else:
         return jsonify({"error": "No model found with the given ID"}), 404
+
 
 # Routes for Tracking
 
